@@ -1,4 +1,4 @@
-package ch.ivyteam.ivy.webservice.exec.cxf.codegen.fix;
+package com.axonivy.ivy.tool.cxf.codegen.fix;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -29,7 +29,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,10 +36,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import ch.ivyteam.log.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class FixCXFSchemaLocation {
-  private static final Logger LOGGER = Logger.getLogger(FixCXFSchemaLocation.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FixCXFSchemaLocation.class);
 
   /**
    * ISSUE CXF-7706 (https://issues.apache.org/jira/browse/CXF-7706)
@@ -101,7 +102,7 @@ public class FixCXFSchemaLocation {
     for (int i = 0; i < nodeList.getLength(); i++) {
       Node importNode = nodeList.item(i);
       Node schemaLocation = importNode.getAttributes().getNamedItem("schemaLocation");
-      if (schemaLocation != null && StringUtils.isBlank(schemaLocation.getNodeValue())) {
+      if (schemaLocation != null && schemaLocation.getNodeValue() != null && !schemaLocation.getNodeValue().isBlank()) {
         Element importElement = ((Attr) schemaLocation).getOwnerElement();
         importElement.removeAttribute("schemaLocation");
 

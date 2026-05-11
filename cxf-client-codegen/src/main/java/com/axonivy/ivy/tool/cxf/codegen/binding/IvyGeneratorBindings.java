@@ -15,7 +15,8 @@ import java.util.stream.Stream;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.cxf.Bus;
 
-import ch.ivyteam.ivy.webservice.call.IWebserviceClientCodeGenerator.CodegenOpts;
+import com.axonivy.ivy.tool.cxf.codegen.CxfClientGenerator.CodegenOpts;
+
 
 public class IvyGeneratorBindings {
 

@@ -1,5 +1,6 @@
 package com.axonivy.ivy.tool.cxf.codegen;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
@@ -7,6 +8,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +18,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.Strings;
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
@@ -28,13 +29,12 @@ import org.apache.cxf.transport.DestinationFactory;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transport.http.HTTPConduitConfigurer;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import ch.ivyteam.io.TemporaryDirectory;
-import ch.ivyteam.ivy.webservice.call.IWebserviceClientCodeGenerator.CodegenOpts;
-import ch.ivyteam.ivy.webservice.exec.cxf.codegen.binding.IvyGeneratorBindings;
-import ch.ivyteam.ivy.webservice.exec.cxf.codegen.fix.FixCXFSchemaLocation;
-import ch.ivyteam.log.Logger;
-import ch.ivyteam.util.context.ThreadContextClassLoaderContext;
+import com.axonivy.ivy.tool.cxf.codegen.binding.IvyGeneratorBindings;
+import com.axonivy.ivy.tool.cxf.codegen.fix.FixCXFSchemaLocation;
+
 
 /**
  * Plain CXF client jar generator without any Eclipse or Ivy API involved.
@@ -43,10 +43,14 @@ import ch.ivyteam.util.context.ThreadContextClassLoaderContext;
  */
 public class CxfClientGenerator {
 
-  private static final Logger LOGGER = Logger.getLogger(CxfClientGenerator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CxfClientGenerator.class);
+
+  public record CodegenOpts(Map<String, String> nsMappings, boolean underscoreNames) {
+    public static CodegenOpts DEFAULT = new CodegenOpts(Map.of(), false);
+  }
 
   public static ToolContext generate(String wsdlUri, Consumer<Path> clientJarUser, CodegenOpts options) throws Exception {
-    var tmpGenDir = TemporaryDirectory.create().prefix("cxfClient").toPath();
+    var tmpGenDir = Files.createTempDirectory("cxfClient");
     try {
       var tmpClientJar = tmpGenDir.resolve("client.jar");
 
@@ -66,7 +70,7 @@ public class CxfClientGenerator {
         WSDLToJava cxfGenerator = new WSDLToJava(args.toArray(new String[args.size()]));
         ToolContext cxfContext = new ToolContext();
         cxfContext.put(ToolConstants.CFG_BINDING, new IvyGeneratorBindings(tmpGenDir).getBindings(options));
-        cxfContext.put(ToolConstants.COMPILER, new JdtCxfCompiler(tmpGenDir));
+        //cxfContext.put(ToolConstants.COMPILER, new JdtCxfCompiler(tmpGenDir));
         options.nsMappings().forEach((k, v) -> cxfContext.addNamespacePackageMap(k, v));
         cxfGenerator.run(cxfContext);
 
@@ -83,7 +87,10 @@ public class CxfClientGenerator {
               withHttpPortFactory(
                   withTcl(generate)))).call();
     } finally {
-      TemporaryDirectory.deleteOrLogWarning(tmpGenDir);
+      Files.walk(tmpGenDir)
+          .sorted(Comparator.reverseOrder())
+          .map(Path::toFile)
+          .forEach(File::delete);
     }
   }
 
@@ -98,7 +105,7 @@ public class CxfClientGenerator {
         return;
       }
 
-      String path = Strings.CS.replace(serviceNs.get(0), ".", "/");
+      String path = serviceNs.get(0).replace(".", "/");
       Path serviceDirZip = zipFs.getPath(path);
 
       try (Stream<Path> walker = Files.walk(zipFs.getPath("/"), 1)) {
@@ -153,7 +160,14 @@ public class CxfClientGenerator {
   }
 
   private static <T> Callable<T> withTcl(Callable<T> callable) {
-    return () -> new ThreadContextClassLoaderContext(WSDLToJava.class).callInContext(callable);
+    var currentThread = Thread.currentThread();
+    var originalClassLoader = currentThread.getContextClassLoader();
+    currentThread.setContextClassLoader(WSDLToJava.class.getClassLoader());
+    try {
+      return () -> callable.call();
+    } finally {
+      currentThread.setContextClassLoader(originalClassLoader);
+    }
   }
 
   private static Callable<ToolContext> withRedirectConfigurer(Callable<ToolContext> callable) {
