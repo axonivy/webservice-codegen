@@ -17,7 +17,7 @@
     <cxf.version>3.6.9</cxf.version>
     <cxf.xjc.version>3.3.4</cxf.xjc.version>
     <jaxb2.commons.version>0.13.1</jaxb2.commons.version>
-    <jaxb.version>2.3.1</jaxb.version>
+    <jaxb.version>2.3.5</jaxb.version>
   </properties>
 
   <description>Generates the CXF client for webservice client calls</description>
@@ -194,13 +194,6 @@
           <artifactId>commons-lang3</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-
-    <!-- JAXB RI implementation: com.sun.xml.bind.Utils needed by XJC at runtime -->
-    <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
-      <version>${jaxb.version}</version>
     </dependency>
 
     <!-- XJC extensions to enhance JAXB code generation -->
