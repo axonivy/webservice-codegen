@@ -649,8 +649,28 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
-  
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Pin transitive versions to match the OSGi runtime -->
+      <dependency>
+        <groupId>com.fasterxml.woodstox</groupId>
+        <artifactId>woodstox-core</artifactId>
+        <version>6.5.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.santuario</groupId>
+        <artifactId>xmlsec</artifactId>
+        <version>2.3.5</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.velocity</groupId>
+        <artifactId>velocity-engine-core</artifactId>
+        <version>2.3</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <build>
     <testSourceDirectory>src/test/java</testSourceDirectory>
     <plugins>
