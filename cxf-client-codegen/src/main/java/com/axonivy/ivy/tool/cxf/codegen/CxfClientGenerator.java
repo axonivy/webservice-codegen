@@ -98,7 +98,6 @@ public class CxfClientGenerator {
       options.nsMappings().forEach((k, v) -> cxfContext.addNamespacePackageMap(k, v));
       cxfGenerator.run(cxfContext);
 
-      //appendSources(tmpClientJar);
       //FixCXFSchemaLocation.fixLocalWsdlIfNecessary(tmpClientJar); // Bug fix for CXF-7706
       moveLocalWsdlToService(tmpGenDir, cxfContext);
 
@@ -144,26 +143,6 @@ public class CxfClientGenerator {
   private static boolean isSchemaFile(Path zipPath) {
     String entry = zipPath.toString().toLowerCase();
     return entry.endsWith(".wsdl") || entry.endsWith(".xsd");
-  }
-
-  /**
-   * embedded java sources next to its binaries in the JAR
-   */
-  private static void appendSources(Path tmpClientJar) throws IOException {
-    URI uri = URI.create("jar:" + tmpClientJar.toUri());
-    Path tmpPath = tmpClientJar.getParent();
-    try (FileSystem zipFs = FileSystems.newFileSystem(uri, new HashMap<>());
-        Stream<Path> walker = Files.walk(tmpPath)) {
-      walker.filter(path -> path.toFile().getName().endsWith(".java"))
-          .forEach(entry -> {
-            Path relative = tmpPath.relativize(entry);
-            try {
-              Files.copy(entry, zipFs.getPath(relative.toString()));
-            } catch (IOException ex) {
-              LOGGER.warn("Failed to copy java source into CXF client jar", ex);
-            }
-          });
-    }
   }
 
   private static <T> Callable<T> withHttpPortFactory(Callable<T> callable) {
