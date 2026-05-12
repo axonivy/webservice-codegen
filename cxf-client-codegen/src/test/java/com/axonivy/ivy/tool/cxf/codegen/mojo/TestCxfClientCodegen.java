@@ -2,27 +2,20 @@ package com.axonivy.ivy.tool.cxf.codegen.mojo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 // import javax.jws.WebParam.Mode;
 
@@ -30,12 +23,9 @@ import java.util.stream.Collectors;
 // import org.apache.commons.lang3.Strings;
 // import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.cxf.tools.common.ToolContext;
-import org.apache.cxf.tools.wsdlto.WSDLToJava;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 // import org.osgi.framework.BundleException;
-
-import com.axonivy.ivy.tool.cxf.codegen.CxfClientGenerator.CodegenOpts;
 
 // import ch.ivyteam.eclipse.util.EclipsePlatformUtils;
 // import ch.ivyteam.ivy.webservice.call.IWebserviceClientCodeGenerator.CodegenOpts;
