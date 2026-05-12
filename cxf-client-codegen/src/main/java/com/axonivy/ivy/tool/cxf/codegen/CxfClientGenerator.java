@@ -92,16 +92,13 @@ public class CxfClientGenerator {
       };
 
       
-     // cxfContext.put(ToolConstants.CFG_WSDLLIST, true);
       cxfContext.put(ToolConstants.CFG_BINDING, new IvyGeneratorBindings(tmpGenDir).getBindings(options));
-      //cxfContext.put(ToolConstants.COMPILER, new JdtCxfCompiler(tmpGenDir));
       options.nsMappings().forEach((k, v) -> cxfContext.addNamespacePackageMap(k, v));
       cxfGenerator.run(cxfContext);
 
       //FixCXFSchemaLocation.fixLocalWsdlIfNecessary(tmpClientJar); // Bug fix for CXF-7706
       moveLocalWsdlToService(tmpGenDir, cxfContext);
 
-      //clientJarUser.accept(tmpClientJar);
       return cxfContext;
     };
 
