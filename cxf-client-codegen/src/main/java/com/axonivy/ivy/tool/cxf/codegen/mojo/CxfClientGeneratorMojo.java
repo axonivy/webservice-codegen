@@ -1,16 +1,21 @@
-package com.axonivy.ivy.tool.openapi.codegen.mojo;
+package com.axonivy.ivy.tool.cxf.codegen.mojo;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
 
+import org.apache.cxf.tools.common.ToolContext;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+
+import com.axonivy.ivy.tool.cxf.codegen.CxfClientGenerator;
+import com.axonivy.ivy.tool.cxf.codegen.CxfClientGenerator.CodegenOpts;
 
 /**
  * <p>
@@ -35,22 +40,17 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
   @Parameter(property = "ivy.generate.webservice.client.skip", defaultValue = "false")
   boolean skipGenerate;
 
-  // /** URI or Path to an openapi.json or openapi.yaml */
-  // @Parameter(property = "ivy.generate.openapi.client.spec", required = true)
-  // String openApiSpec;
+  /** URI or Path to a WSDL file */
+  @Parameter(property = "ivy.generate.webservice.client.wsdl", required = true)
+  String wsdl;
 
-  // @Parameter(property = "ivy.generate.openapi.client.output", required = true)
-  // Path outputDir;
+  // TODO: doc
+  @Parameter(property = "ivy.generate.webservice.client.nsMappings")
+  Map<String, String> nsMappings;
 
-  // @Parameter(property = "ivy.generate.openapi.client.namespace")
-  // String namespace;
-
-  // /**
-  //  * Generate types for generic 'allOf', 'anyOf' references.
-  //  * This can help to build a valid client, if generated sources can't be compiled using the default options
-  //  */
-  // @Parameter(property = "ivy.generate.openapi.client.resolveFully")
-  // Boolean resolveFully;
+  // TODO: doc
+  @Parameter(property = "ivy.generate.webservice.client.underscoreNames", defaultValue = "false")
+  Boolean underscoreNames;
 
   @Override
   public void execute() throws MojoExecutionException {
@@ -58,6 +58,24 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
       return;
     }
     getLog().info("Generating CXF client sources...");
+
+
+    //     var targetJar = FilePath.of(IvyConstants.DIRECTORY_LIB_WS_CLIENT).append(getClientJarName(context.config.getId()));
+    ToolContext cxfContext = CxfClientGenerator.generate(wsdl, 
+        clientJar -> getLog().info("Generated CXF client jar: " + clientJar), CxfClientGenerator.CodegenOpts.DEFAULT),
+        new CodegenOpts(nsMappings, underscoreNames);
+    System.out.println("Generated CXF client context: " + cxfContext);
+//         tmpClientJar -> new JarProjectIntegratorService(tmpClientJar, context.project, targetJar)
+//             .integrate(context.monitor),
+//         new CodegenOpts(context.codegen.nsMappings(), context.codegen.underscoreNames()));
+
+//     var services = CxfModelConverter.toWsConfigModel(cxfContext);
+//     if (services.size() > 1) {
+//       LOGGER.warn("Multiple CXF services in model. We only support one service per WSDL.");
+//     }
+//     if (!services.isEmpty()) {
+//       context.config.setService(services.get(0));
+//     }
   }
 
 }
