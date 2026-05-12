@@ -60,9 +60,9 @@ public class CxfClientGenerator {
           "-clientjar", tmpClientJar.getFileName().toString(),
           "-autoNameResolution", // solve conflicts
           "-mark-generated", // @Generated annotation
-          "-xjc-Xsetters", // JAXB2_basics plugin. Generates setter methods for collections
-          "-xjc-Xcommons-lang", // JAXB2_commons_lang plugin. Generates toString, equals, hashCode methods
-          "-xjc-Xcommons-lang:ToStringStyle=SHORT_PREFIX_STYLE",
+          //"-xjc-Xsetters", // JAXB2_basics plugin. Generates setter methods for collections
+          //"-xjc-Xcommons-lang", // JAXB2_commons_lang plugin. Generates toString, equals, hashCode methods
+          //"-xjc-Xcommons-lang:ToStringStyle=SHORT_PREFIX_STYLE",
           wsdlUri);
 
       Callable<ToolContext> generate = () -> {
