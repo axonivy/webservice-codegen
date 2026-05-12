@@ -61,10 +61,16 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
 
 
     //     var targetJar = FilePath.of(IvyConstants.DIRECTORY_LIB_WS_CLIENT).append(getClientJarName(context.config.getId()));
-    ToolContext cxfContext = CxfClientGenerator.generate(wsdl, 
-        clientJar -> getLog().info("Generated CXF client jar: " + clientJar), CxfClientGenerator.CodegenOpts.DEFAULT),
-        new CodegenOpts(nsMappings, underscoreNames);
-    System.out.println("Generated CXF client context: " + cxfContext);
+    ToolContext cxfContext;
+    try {
+      cxfContext = CxfClientGenerator.generate(wsdl, 
+          clientJar -> getLog().info("Generated CXF client jar: " + clientJar),
+          new CodegenOpts(nsMappings, underscoreNames));
+          System.out.println("Generated CXF client context: " + cxfContext);
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 //         tmpClientJar -> new JarProjectIntegratorService(tmpClientJar, context.project, targetJar)
 //             .integrate(context.monitor),
 //         new CodegenOpts(context.codegen.nsMappings(), context.codegen.underscoreNames()));

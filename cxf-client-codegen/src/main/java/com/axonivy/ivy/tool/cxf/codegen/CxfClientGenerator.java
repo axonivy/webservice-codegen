@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.axonivy.ivy.tool.cxf.codegen.binding.IvyGeneratorBindings;
+import com.axonivy.ivy.tool.cxf.codegen.binding.JAXWSBindingSerializer;
 import com.axonivy.ivy.tool.cxf.codegen.fix.FixCXFSchemaLocation;
 
 
@@ -66,7 +67,7 @@ public class CxfClientGenerator {
 
       Callable<ToolContext> generate = () -> {
         // should be fixed with cxf version 3.2.5
-        // JAXWSBindingSerializer.register(); // Bug fix for CXF-7695
+        JAXWSBindingSerializer.register(); // Bug fix for CXF-7695
         WSDLToJava cxfGenerator = new WSDLToJava(args.toArray(new String[args.size()]));
         ToolContext cxfContext = new ToolContext();
         cxfContext.put(ToolConstants.CFG_BINDING, new IvyGeneratorBindings(tmpGenDir).getBindings(options));
