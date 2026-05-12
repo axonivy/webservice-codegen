@@ -1,0 +1,10 @@
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/Com.Kendox.Dcis.SubSystem.Service.Fault" xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/Com.Kendox.Dcis.SubSystem.Service.Fault">
+  <xs:complexType name="ServiceException">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ErrorNumber" type="xs:int"></xs:element>
+      <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string"></xs:element>
+      <xs:element minOccurs="0" name="StackTrace" nillable="true" type="xs:string"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ServiceException" nillable="true" type="tns:ServiceException"></xs:element>
+</xs:schema>

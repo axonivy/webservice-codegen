@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="urn:schema.ws.test.ivyteam.ch" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="urn:ws.test.ivyteam.ch" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="urn:ws.test.ivyteam.ch">
+    <wsdl:documentation>IvyEchoService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="urn:schema.ws.test.ivyteam.ch">
+            <xs:element name="getSessionId">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSessionIdResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="echoDate">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="date" nillable="true" type="xs:date"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="echoDateResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:date"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="echoObject">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="obj" nillable="true" type="xs:anyType"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="echoObjectResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:anyType"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="echoString">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="echoStringResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="returnVoid">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="waitFor">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="waitTime" type="xs:long"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="logMessageToStdOut">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="returnNullObject">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="returnNullObjectResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:anyType"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getHelloMessage">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getHelloMessageResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getHelloMessageRequest">
+        <wsdl:part name="parameters" element="ns:getHelloMessage"/>
+    </wsdl:message>
+    <wsdl:message name="getHelloMessageResponse">
+        <wsdl:part name="parameters" element="ns:getHelloMessageResponse"/>
+    </wsdl:message>
+    <wsdl:message name="echoDateRequest">
+        <wsdl:part name="parameters" element="ns:echoDate"/>
+    </wsdl:message>
+    <wsdl:message name="echoDateResponse">
+        <wsdl:part name="parameters" element="ns:echoDateResponse"/>
+    </wsdl:message>
+    <wsdl:message name="returnVoidRequest">
+        <wsdl:part name="parameters" element="ns:returnVoid"/>
+    </wsdl:message>
+    <wsdl:message name="logMessageToStdOutRequest">
+        <wsdl:part name="parameters" element="ns:logMessageToStdOut"/>
+    </wsdl:message>
+    <wsdl:message name="getSessionIdRequest">
+        <wsdl:part name="parameters" element="ns:getSessionId"/>
+    </wsdl:message>
+    <wsdl:message name="getSessionIdResponse">
+        <wsdl:part name="parameters" element="ns:getSessionIdResponse"/>
+    </wsdl:message>
+    <wsdl:message name="returnNullObjectRequest">
+        <wsdl:part name="parameters" element="ns:returnNullObject"/>
+    </wsdl:message>
+    <wsdl:message name="returnNullObjectResponse">
+        <wsdl:part name="parameters" element="ns:returnNullObjectResponse"/>
+    </wsdl:message>
+    <wsdl:message name="waitForRequest">
+        <wsdl:part name="parameters" element="ns:waitFor"/>
+    </wsdl:message>
+    <wsdl:message name="echoStringRequest">
+        <wsdl:part name="parameters" element="ns:echoString"/>
+    </wsdl:message>
+    <wsdl:message name="echoStringResponse">
+        <wsdl:part name="parameters" element="ns:echoStringResponse"/>
+    </wsdl:message>
+    <wsdl:message name="echoObjectRequest">
+        <wsdl:part name="parameters" element="ns:echoObject"/>
+    </wsdl:message>
+    <wsdl:message name="echoObjectResponse">
+        <wsdl:part name="parameters" element="ns:echoObjectResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="IvyEchoServicePortType">
+        <wsdl:operation name="getHelloMessage">
+            <wsdl:input message="tns:getHelloMessageRequest" wsaw:Action="urn:getHelloMessage"/>
+            <wsdl:output message="tns:getHelloMessageResponse" wsaw:Action="urn:getHelloMessageResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="echoDate">
+            <wsdl:input message="tns:echoDateRequest" wsaw:Action="urn:echoDate"/>
+            <wsdl:output message="tns:echoDateResponse" wsaw:Action="urn:echoDateResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="returnVoid">
+            <wsdl:input message="tns:returnVoidRequest" wsaw:Action="urn:returnVoid"/>
+        </wsdl:operation>
+        <wsdl:operation name="logMessageToStdOut">
+            <wsdl:input message="tns:logMessageToStdOutRequest" wsaw:Action="urn:logMessageToStdOut"/>
+        </wsdl:operation>
+        <wsdl:operation name="getSessionId">
+            <wsdl:input message="tns:getSessionIdRequest" wsaw:Action="urn:getSessionId"/>
+            <wsdl:output message="tns:getSessionIdResponse" wsaw:Action="urn:getSessionIdResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="returnNullObject">
+            <wsdl:input message="tns:returnNullObjectRequest" wsaw:Action="urn:returnNullObject"/>
+            <wsdl:output message="tns:returnNullObjectResponse" wsaw:Action="urn:returnNullObjectResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="waitFor">
+            <wsdl:input message="tns:waitForRequest" wsaw:Action="urn:waitFor"/>
+        </wsdl:operation>
+        <wsdl:operation name="echoString">
+            <wsdl:input message="tns:echoStringRequest" wsaw:Action="urn:echoString"/>
+            <wsdl:output message="tns:echoStringResponse" wsaw:Action="urn:echoStringResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="echoObject">
+            <wsdl:input message="tns:echoObjectRequest" wsaw:Action="urn:echoObject"/>
+            <wsdl:output message="tns:echoObjectResponse" wsaw:Action="urn:echoObjectResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="IvyEchoServiceSoap11Binding" type="tns:IvyEchoServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getHelloMessage">
+            <soap:operation soapAction="urn:getHelloMessage" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="echoDate">
+            <soap:operation soapAction="urn:echoDate" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="returnVoid">
+            <soap:operation soapAction="urn:returnVoid" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="logMessageToStdOut">
+            <soap:operation soapAction="urn:logMessageToStdOut" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getSessionId">
+            <soap:operation soapAction="urn:getSessionId" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="returnNullObject">
+            <soap:operation soapAction="urn:returnNullObject" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="waitFor">
+            <soap:operation soapAction="urn:waitFor" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="echoString">
+            <soap:operation soapAction="urn:echoString" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="echoObject">
+            <soap:operation soapAction="urn:echoObject" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="IvyEchoServiceSoap12Binding" type="tns:IvyEchoServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getHelloMessage">
+            <soap12:operation soapAction="urn:getHelloMessage" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="echoDate">
+            <soap12:operation soapAction="urn:echoDate" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="returnVoid">
+            <soap12:operation soapAction="urn:returnVoid" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="logMessageToStdOut">
+            <soap12:operation soapAction="urn:logMessageToStdOut" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getSessionId">
+            <soap12:operation soapAction="urn:getSessionId" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="returnNullObject">
+            <soap12:operation soapAction="urn:returnNullObject" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="waitFor">
+            <soap12:operation soapAction="urn:waitFor" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="echoString">
+            <soap12:operation soapAction="urn:echoString" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="echoObject">
+            <soap12:operation soapAction="urn:echoObject" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="IvyEchoServiceHttpBinding" type="tns:IvyEchoServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="getHelloMessage">
+            <http:operation location="getHelloMessage"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="echoDate">
+            <http:operation location="echoDate"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="returnVoid">
+            <http:operation location="returnVoid"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="logMessageToStdOut">
+            <http:operation location="logMessageToStdOut"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getSessionId">
+            <http:operation location="getSessionId"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="returnNullObject">
+            <http:operation location="returnNullObject"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="waitFor">
+            <http:operation location="waitFor"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="echoString">
+            <http:operation location="echoString"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="echoObject">
+            <http:operation location="echoObject"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="IvyEchoService">
+        <wsdl:port name="IvyEchoServiceHttpsSoap11Endpoint" binding="tns:IvyEchoServiceSoap11Binding">
+            <soap:address location="https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="IvyEchoServiceHttpSoap11Endpoint" binding="tns:IvyEchoServiceSoap11Binding">
+            <soap:address location="http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="IvyEchoServiceHttpsSoap12Endpoint" binding="tns:IvyEchoServiceSoap12Binding">
+            <soap12:address location="https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="IvyEchoServiceHttpSoap12Endpoint" binding="tns:IvyEchoServiceSoap12Binding">
+            <soap12:address location="http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="IvyEchoServiceHttpEndpoint" binding="tns:IvyEchoServiceHttpBinding">
+            <http:address location="http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpEndpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="IvyEchoServiceHttpsEndpoint" binding="tns:IvyEchoServiceHttpBinding">
+            <http:address location="https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

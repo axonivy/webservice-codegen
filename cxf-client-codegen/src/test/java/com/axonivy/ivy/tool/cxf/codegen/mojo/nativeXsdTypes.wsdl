@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://types.testservice.ivyteam.ch/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" name="NativeTypeServiceService" targetNamespace="http://types.testservice.ivyteam.ch/">
+<wsdl:documentation>Interact with XSD native types</wsdl:documentation>
+  <wsdl:types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://types.testservice.ivyteam.ch/" elementFormDefault="unqualified" targetNamespace="http://types.testservice.ivyteam.ch/" version="1.0">
+
+  <xs:element name="eval" type="tns:eval"/>
+
+  <xs:element name="evalResponse" type="tns:evalResponse"/>
+
+  <xs:complexType name="eval">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="natives" type="tns:xsdNativeTypes"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="xsdNativeTypes">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="string" type="xs:string"/>
+      <xs:element minOccurs="0" name="date" type="xs:date"/>
+      <xs:element minOccurs="0" name="dateTime" type="xs:dateTime"/>
+      <xs:element minOccurs="0" name="time" type="xs:time"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="evalResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:xsdNativeTypes"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="eval">
+    <wsdl:part element="tns:eval" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="evalResponse">
+    <wsdl:part element="tns:evalResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="NativeTypeService">
+    <wsdl:operation name="eval">
+      <wsdl:input message="tns:eval" name="eval">
+    </wsdl:input>
+      <wsdl:output message="tns:evalResponse" name="evalResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="NativeTypeServiceServiceSoapBinding" type="tns:NativeTypeService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="eval">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="eval">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="evalResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="NativeTypeServiceService">
+    <wsdl:port binding="tns:NativeTypeServiceServiceSoapBinding" name="NativeTypeServicePort">
+      <soap:address location="http://test-webservices.ivyteam.io:8080/country-service/webservices/native"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

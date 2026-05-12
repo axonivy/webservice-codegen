@@ -1,0 +1,67 @@
+<?xml version="1.0" ?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://wsbindin/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="ch.ivyteam.ivy.webservice.process" name="testService" targetNamespace="http://wsbindin/">
+  <wsdl:types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://wsbindin/" elementFormDefault="unqualified" targetNamespace="http://wsbindin/" version="1.0">
+
+  <xs:element name="call" type="tns:call"></xs:element>
+
+  <xs:element name="callResponse" type="tns:callResponse"></xs:element>
+
+  <xs:complexType name="call">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="names" type="xs:string"></xs:element>
+      <xs:element minOccurs="0" name="male" type="xs:boolean"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="callResponse">
+    <xs:sequence></xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="ch.ivyteam.ivy.webservice.process" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="ch.ivyteam.ivy.webservice.process">
+  <xsd:element name="TechnicalException" nillable="true" type="xsd:string"></xsd:element>
+</xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="call">
+    <wsdl:part element="tns:call" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="WebServiceProcessTechnicalException">
+    <wsdl:part element="ns1:TechnicalException" name="WebServiceProcessTechnicalException">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="callResponse">
+    <wsdl:part element="tns:callResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="test">
+    <wsdl:operation name="call">
+      <wsdl:input message="tns:call" name="call">
+    </wsdl:input>
+      <wsdl:output message="tns:callResponse" name="callResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:WebServiceProcessTechnicalException" name="WebServiceProcessTechnicalException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="testServiceSoapBinding" type="tns:test">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"></soap:binding>
+    <wsdl:operation name="call">
+      <soap:operation soapAction="" style="document"></soap:operation>
+      <wsdl:input name="call">
+        <soap:body use="literal"></soap:body>
+      </wsdl:input>
+      <wsdl:output name="callResponse">
+        <soap:body use="literal"></soap:body>
+      </wsdl:output>
+      <wsdl:fault name="WebServiceProcessTechnicalException">
+        <soap:fault name="WebServiceProcessTechnicalException" use="literal"></soap:fault>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="testService">
+    <wsdl:port binding="tns:testServiceSoapBinding" name="testPort">
+      <soap:address location="http://localhost:8081/ivy/ws/designer/WsBinding/162AA5A608559E31"></soap:address>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
