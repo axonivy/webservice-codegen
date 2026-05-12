@@ -12,9 +12,9 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 // import javax.jws.WebParam.Mode;
@@ -48,17 +48,6 @@ class TestCxfClientCodegen {
 
   @Test
   void generateEchoServiceOnline(@TempDir Path tmpDir) throws Exception {
-    // ToolContext meta = generate("http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService?wsdl",
-    //     client -> {
-    //       assertThat(client).exists();
-    //       // List<Path> entries = getJarContents(client);
-    //       // Path servicePath = entries.get(0).resolve("ch/ivyteam/test/ws/");
-    //       // assertThat(entries).as("contains service descriptor as offline resources").contains(servicePath.resolve("IvyEchoService.wsdl"));
-    //       // assertThat(entries).as("contains service binary").contains(servicePath.resolve("IvyEchoService.class"));
-    //       // assertThat(entries).as("contains service source").contains(servicePath.resolve("IvyEchoService.java"));
-    //       // fileRef.set(client);
-    //     });
-
     var meta = CxfClientGenerator.generate(
         "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService?wsdl", tmpDir, 
         CxfClientGenerator.CodegenOpts.DEFAULT);
@@ -71,25 +60,6 @@ class TestCxfClientCodegen {
     assertThat(servicePath.resolve("IvyEchoService.wsdl"))
         .as("contains service descriptor as offline resources")
         .exists();
-
-    // var schema = servicePath.resolve("schema");
-    // assertThat(schema.resolve("EchoDate.java")).exists();
-    // assertThat(schema.resolve("EchoDateResponse.java")).exists();
-    // assertThat(schema.resolve("EchoObject.java")).exists();
-    // assertThat(schema.resolve("EchoObjectResponse.java")).exists();
-    // assertThat(schema.resolve("EchoString.java")).exists();
-    // assertThat(schema.resolve("EchoStringResponse.java")).exists();
-    // assertThat(schema.resolve("GetHelloMessage.java")).exists();
-    // assertThat(schema.resolve("GetHelloMessageResponse.java")).exists();
-    // assertThat(schema.resolve("GetSessionId.java")).exists();
-    // assertThat(schema.resolve("GetSessionIdResponse.java")).exists();
-    // assertThat(schema.resolve("LogMessageToStdOut.java")).exists();
-    // assertThat(schema.resolve("ObjectFactory.java")).exists();
-    // assertThat(schema.resolve("package-info.java")).exists();
-    // assertThat(schema.resolve("ReturnNullObject.java")).exists();
-    // assertThat(schema.resolve("ReturnNullObjectResponse.java")).exists();
-    // assertThat(schema.resolve("ReturnVoid.java")).exists();
-    // assertThat(schema.resolve("WaitFor.java")).exists();
   }
 
   // @Test
@@ -116,27 +86,24 @@ class TestCxfClientCodegen {
   //   }
   // }
 
-  // @Test
-  // void generateWithPackageMapping() throws Exception {
-  //   Map<String, String> mapping = new HashMap<>();
-  //   String packageName = "ch.ivyteam.testmapping.service";
-  //   mapping.put("urn:ws.test.ivyteam.ch", packageName);
-  //   mapping.put("urn:schema.ws.test.ivyteam.ch", "ch.ivyteam.testmapping.schema");
-  //   var fileRef = new AtomicReference<>(Path.of(""));
-  //   ToolContext meta = CxfClientGenerator.generate("http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService?wsdl",
-  //       client -> {
-  //         assertThat(client).exists();
-  //         String pathPrefix = (packageName + "/").replace('.', '/');
-  //         List<Path> entries = getJarContents(client);
-  //         Path servicePath = entries.get(0).resolve(pathPrefix);
-  //         assertThat(entries).as("contains service descriptor as offline resources").contains(servicePath.resolve("IvyEchoService.wsdl"));
-  //         assertThat(entries).as("contains service binary").contains(servicePath.resolve("IvyEchoService.class"));
-  //         assertThat(entries).as("contains service source").contains(servicePath.resolve("IvyEchoService.java"));
-  //         fileRef.set(client);
-  //       },
-  //       new CodegenOpts(mapping, false));
-  //   assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("IvyEchoService");
-  // }
+  @Test
+  void generateWithPackageMapping(@TempDir Path tmpDir) throws Exception {
+    Map<String, String> mapping = new HashMap<>();
+    String packageName = "ch.ivyteam.testmapping.service";
+    mapping.put("urn:ws.test.ivyteam.ch", packageName);
+    mapping.put("urn:schema.ws.test.ivyteam.ch", "ch.ivyteam.testmapping.schema");
+    ToolContext meta = CxfClientGenerator.generate(
+      "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService?wsdl", tmpDir,
+        new CxfClientGenerator.CodegenOpts(mapping, false));
+
+
+    String pathPrefix = (packageName + "/").replace('.', '/');
+    Path servicePath = tmpDir.resolve(pathPrefix);
+    assertThat(servicePath.resolve("IvyEchoService.java")).exists();
+    assertThat(servicePath.resolve("IvyEchoService.wsdl")).exists();
+    assertThat(meta.getJavaModel().getServiceClasses())
+      .containsOnlyKeys("IvyEchoService");
+  }
 
   // private static List<Path> getJarContents(Path clientJar) {
   //   URI uri = URI.create("jar:" + clientJar.toUri());
