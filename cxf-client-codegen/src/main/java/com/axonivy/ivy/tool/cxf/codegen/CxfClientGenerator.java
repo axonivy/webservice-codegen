@@ -161,14 +161,16 @@ public class CxfClientGenerator {
   }
 
   private static <T> Callable<T> withTcl(Callable<T> callable) {
-    var currentThread = Thread.currentThread();
-    var originalClassLoader = currentThread.getContextClassLoader();
-    currentThread.setContextClassLoader(WSDLToJava.class.getClassLoader());
-    try {
-      return () -> callable.call();
-    } finally {
-      currentThread.setContextClassLoader(originalClassLoader);
-    }
+    return () -> {
+      var currentThread = Thread.currentThread();
+      var originalClassLoader = currentThread.getContextClassLoader();
+      currentThread.setContextClassLoader(WSDLToJava.class.getClassLoader());
+      try {
+        return callable.call();
+      } finally {
+        currentThread.setContextClassLoader(originalClassLoader);
+      }
+    };
   }
 
   private static Callable<ToolContext> withRedirectConfigurer(Callable<ToolContext> callable) {

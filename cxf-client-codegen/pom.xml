@@ -196,6 +196,13 @@
       </exclusions>
     </dependency>
 
+    <!-- JAXB RI implementation: com.sun.xml.bind.Utils needed by XJC at runtime -->
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>${jaxb.version}</version>
+    </dependency>
+
     <!-- XJC extensions to enhance JAXB code generation -->
     <dependency>
       <groupId>org.apache.cxf.xjcplugins</groupId>
