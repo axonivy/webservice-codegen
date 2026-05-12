@@ -105,15 +105,6 @@ class TestCxfClientCodegen {
       .containsOnlyKeys("IvyEchoService");
   }
 
-  // private static List<Path> getJarContents(Path clientJar) {
-  //   URI uri = URI.create("jar:" + clientJar.toUri());
-  //   try (FileSystem zipFs = FileSystems.newFileSystem(uri, Map.of())) {
-  //     return Files.walk(zipFs.getPath("/")).collect(Collectors.toList());
-  //   } catch (IOException ex) {
-  //     throw new RuntimeException("Failed to assert client JAR content", ex);
-  //   }
-  // }
-
   // @Test
   // void executeGeneratedClient() throws Exception {
   //   generate("http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService?wsdl",
@@ -136,25 +127,24 @@ class TestCxfClientCodegen {
   //       });
   // }
 
-  // /**
-  //  * Regression test that verifies that our preliminary solution to generate correct exception type works.
-  //  * We filed a fix for CXF 3.2.2-SNAPSHOT
-  //  *
-  //  * ISSUE XIVY-2399 Fix Code generation error when service contains exception types.
-  //  * ISSUE CXF-6134 Apache CXF generating constructor with duplicate argument names causing compilation error
-  //  * @throws Exception
-  //  */
-  // @Test
-  // void generatePortalConnector() throws Exception {
-  //   generate(this.getClass().getResource("portalWebStartable.wsdl").toString(), client -> {
-  //     assertThat(client).exists();
-  //     List<Path> entries = getJarContents(client);
-  //     Path service = entries.get(0).resolve("ch/ivy/ws/addon");
-  //     assertThat(entries).contains(service.resolve("Exception.class"));
-  //     assertThat(entries).contains(service.resolve("Throwable.class"));
-  //     assertThat(entries).contains(service.resolve("WebServiceProcessTechnicalException.class"));
-  //   });
-  // }
+  /**
+   * Regression test that verifies that our preliminary solution to generate correct exception type works.
+   * We filed a fix for CXF 3.2.2-SNAPSHOT
+   *
+   * ISSUE XIVY-2399 Fix Code generation error when service contains exception types.
+   * ISSUE CXF-6134 Apache CXF generating constructor with duplicate argument names causing compilation error
+   * @throws Exception
+   */
+  @Test
+  void generatePortalConnector(@TempDir Path tmpDir) throws Exception {
+    CxfClientGenerator.generate(
+          this.getClass().getResource("portalWebStartable.wsdl").toString(), 
+          tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
+    Path service = tmpDir.resolve("ch/ivy/ws/addon");
+    assertThat(service.resolve("Exception.java")).exists();
+    assertThat(service.resolve("Throwable.java")).exists();
+    assertThat(service.resolve("WebServiceProcessTechnicalException.java")).exists();
+  }
 
   // /**
   //  * ISSUE XIVY-2426 Inscribe native Webservice types with well known ivy scripting types
