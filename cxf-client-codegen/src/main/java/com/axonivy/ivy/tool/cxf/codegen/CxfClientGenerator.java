@@ -2,9 +2,6 @@ package com.axonivy.ivy.tool.cxf.codegen;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -68,7 +65,7 @@ public class CxfClientGenerator {
   public static ToolContext generate(String wsdlUri, Path tmpGenDir, CodegenOpts options) throws Exception {
     List<String> args = Arrays.asList(
         "-d", tmpGenDir.toAbsolutePath().toString(), // outputDir
-        "-clientjar", tmpGenDir.resolve("client.jar").getFileName().toString(),
+        "-clientjar", tmpGenDir.resolve("client.jar").getFileName().toString(), // fake it till java sources are generated.
         "-autoNameResolution", // solve conflicts
         "-mark-generated", // @Generated annotation
         //"-xjc-Xsetters", // JAXB2_basics plugin. Generates setter methods for collections
@@ -117,11 +114,7 @@ public class CxfClientGenerator {
       return;
     }
     
-    var container = new WSDLToJavaContainer(null, null);
-    var generateLocalWSDL = WSDLToJavaContainer.class.getDeclaredMethod("generateLocalWSDL", ToolContext.class);
-    cxfContext.put(ToolConstants.CFG_CLASSDIR, tmpGenDir.toAbsolutePath().toString());
-    generateLocalWSDL.setAccessible(true);
-    generateLocalWSDL.invoke(container, cxfContext);
+    generateLocalWsdl(tmpGenDir, cxfContext); // hack; officialy only supported in client.jar mode
 
     String path = serviceNs.get(0).replace(".", "/");
     Path serviceDirZip = tmpGenDir.resolve(path);
@@ -135,6 +128,14 @@ public class CxfClientGenerator {
             }
           });
     }
+  }
+
+  private static void generateLocalWsdl(Path tmpGenDir, ToolContext cxfContext) throws Exception {
+    var container = new WSDLToJavaContainer(null, null);
+    var generateLocalWSDL = WSDLToJavaContainer.class.getDeclaredMethod("generateLocalWSDL", ToolContext.class);
+    cxfContext.put(ToolConstants.CFG_CLASSDIR, tmpGenDir.toAbsolutePath().toString());
+    generateLocalWSDL.setAccessible(true);
+    generateLocalWSDL.invoke(container, cxfContext);
   }
 
   private static boolean isSchemaFile(Path zipPath) {
