@@ -146,26 +146,27 @@ class TestCxfClientCodegen {
     assertThat(service.resolve("WebServiceProcessTechnicalException.java")).exists();
   }
 
-  // /**
-  //  * ISSUE XIVY-2426 Inscribe native Webservice types with well known ivy scripting types
-  //  * @throws Exception
-  //  */
-  // @Test
-  // void generateNativeXmlTypes() throws Exception {
-  //   generate(this.getClass().getResource("nativeXsdTypes.wsdl").toString(), client -> {
-  //     try (URLClassLoader clientCl = newClientJarClassLoader(client)) {
-  //       Class<?> nativeParams = clientCl.loadClass("ch.ivyteam.testservice.types.XsdNativeTypes");
-  //       assertThat(getParamType(nativeParams, "dateTime"))
-  //           .isEqualTo(ch.ivyteam.ivy.scripting.objects.DateTime.class.getName());
-  //       assertThat(getParamType(nativeParams, "time"))
-  //           .isEqualTo(ch.ivyteam.ivy.scripting.objects.Time.class.getName());
-  //       assertThat(getParamType(nativeParams, "date"))
-  //           .isEqualTo(ch.ivyteam.ivy.scripting.objects.Date.class.getName());
-  //     } catch (Exception ex) {
-  //       throw new RuntimeException("failed to invoke CXF service", ex);
-  //     }
-  //   });
-  // }
+  /**
+   * ISSUE XIVY-2426 Inscribe native Webservice types with well known ivy scripting types
+   * @throws Exception
+   */
+  @Test
+  void generateNativeXmlTypes(@TempDir Path tmpDir) throws Exception {
+    CxfClientGenerator.generate(
+        this.getClass().getResource("nativeXsdTypes.wsdl").toString(),
+        tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
+    Path service = tmpDir.resolve("ch/ivyteam/testservice/types");
+
+    Path natives = service.resolve("XsdNativeTypes.java");
+    assertThat(natives).exists();
+    assertThat(Files.readString(natives))
+      .contains("import ch.ivyteam.ivy.scripting.objects.DateTime;")
+      .contains("protected DateTime dateTime;")
+      .contains("import ch.ivyteam.ivy.scripting.objects.Time;")
+      .contains("protected Time time;")
+      .contains("import ch.ivyteam.ivy.scripting.objects.Date;")
+      .contains("protected Date date;");
+  }
 
   // /**
   //  * ISSUE XIVY-2856 Call WS methods that can only be generated in wrapper style
