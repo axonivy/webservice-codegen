@@ -86,7 +86,7 @@ public class CxfClientGenerator {
       return withRedirectConfigurer(
           withSchemaAccProperty(
               withHttpPortFactory(
-                  withTcl(generate)))).call();
+                  generate))).call();
     } finally {
       Files.walk(tmpGenDir)
           .sorted(Comparator.reverseOrder())
@@ -156,19 +156,6 @@ public class CxfClientGenerator {
         return callable.call();
       } finally {
         httpTransportFactory.reset(original);
-      }
-    };
-  }
-
-  private static <T> Callable<T> withTcl(Callable<T> callable) {
-    return () -> {
-      var currentThread = Thread.currentThread();
-      var originalClassLoader = currentThread.getContextClassLoader();
-      currentThread.setContextClassLoader(WSDLToJava.class.getClassLoader());
-      try {
-        return callable.call();
-      } finally {
-        currentThread.setContextClassLoader(originalClassLoader);
       }
     };
   }
