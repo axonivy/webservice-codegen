@@ -25,6 +25,7 @@ import org.apache.cxf.tools.common.ToolConstants;
 import org.apache.cxf.tools.common.ToolContext;
 import org.apache.cxf.tools.common.model.JavaServiceClass;
 import org.apache.cxf.tools.wsdlto.WSDLToJava;
+import org.apache.cxf.tools.wsdlto.WSDLToJavaContainer;
 import org.apache.cxf.transport.DestinationFactory;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transport.http.HTTPConduitConfigurer;
@@ -34,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import com.axonivy.ivy.tool.cxf.codegen.binding.IvyGeneratorBindings;
 import com.axonivy.ivy.tool.cxf.codegen.binding.JAXWSBindingSerializer;
-import com.axonivy.ivy.tool.cxf.codegen.fix.FixCXFSchemaLocation;
 
 
 /**
@@ -54,39 +54,9 @@ public class CxfClientGenerator {
     var tmpGenDir = Files.createTempDirectory("cxfClient");
     try {
       var tmpClientJar = tmpGenDir.resolve("client.jar");
-
-      List<String> args = Arrays.asList(
-          "-d", tmpGenDir.toAbsolutePath().toString(), // outputDir
-          "-clientjar", tmpClientJar.getFileName().toString(),
-          "-autoNameResolution", // solve conflicts
-          "-mark-generated", // @Generated annotation
-          //"-xjc-Xsetters", // JAXB2_basics plugin. Generates setter methods for collections
-          //"-xjc-Xcommons-lang", // JAXB2_commons_lang plugin. Generates toString, equals, hashCode methods
-          //"-xjc-Xcommons-lang:ToStringStyle=SHORT_PREFIX_STYLE",
-          wsdlUri);
-
-      Callable<ToolContext> generate = () -> {
-        // should be fixed with cxf version 3.2.5
-        JAXWSBindingSerializer.register(); // Bug fix for CXF-7695
-        WSDLToJava cxfGenerator = new WSDLToJava(args.toArray(new String[args.size()]));
-        ToolContext cxfContext = new ToolContext();
-        cxfContext.put(ToolConstants.CFG_BINDING, new IvyGeneratorBindings(tmpGenDir).getBindings(options));
-        //cxfContext.put(ToolConstants.COMPILER, new JdtCxfCompiler(tmpGenDir));
-        options.nsMappings().forEach((k, v) -> cxfContext.addNamespacePackageMap(k, v));
-        cxfGenerator.run(cxfContext);
-
-        appendSources(tmpClientJar);
-        FixCXFSchemaLocation.fixLocalWsdlIfNecessary(tmpClientJar); // Bug fix for CXF-7706
-        moveLocalWsdlToService(tmpClientJar, cxfContext);
-
-        clientJarUser.accept(tmpClientJar);
-        return cxfContext;
-      };
-
-      return withRedirectConfigurer(
-          withSchemaAccProperty(
-              withHttpPortFactory(
-                  generate))).call();
+      var toolContext =  generate(wsdlUri, tmpGenDir, options);
+      clientJarUser.accept(tmpClientJar);
+      return toolContext;
     } finally {
       Files.walk(tmpGenDir)
           .sorted(Comparator.reverseOrder())
@@ -95,30 +65,79 @@ public class CxfClientGenerator {
     }
   }
 
-  private static void moveLocalWsdlToService(Path tmpClientJar, ToolContext cxfContext) throws IOException {
-    URI uri = URI.create("jar:" + tmpClientJar.toUri());
-    try (FileSystem zipFs = FileSystems.newFileSystem(uri, new HashMap<>())) {
-      List<String> serviceNs = cxfContext.getJavaModel().getServiceClasses().values().stream()
-          .map(JavaServiceClass::getPackageName)
-          .collect(Collectors.toList());
-      if (serviceNs.size() != 1) {
-        // keep wsdl in root of jar
-        return;
-      }
+  public static ToolContext generate(String wsdlUri, Path tmpGenDir, CodegenOpts options) throws Exception {
+    List<String> args = Arrays.asList(
+        "-d", tmpGenDir.toAbsolutePath().toString(), // outputDir
+        "-clientjar", tmpGenDir.resolve("client.jar").getFileName().toString(),
+        "-autoNameResolution", // solve conflicts
+        "-mark-generated", // @Generated annotation
+        //"-xjc-Xsetters", // JAXB2_basics plugin. Generates setter methods for collections
+        //"-xjc-Xcommons-lang", // JAXB2_commons_lang plugin. Generates toString, equals, hashCode methods
+        //"-xjc-Xcommons-lang:ToStringStyle=SHORT_PREFIX_STYLE",
+        wsdlUri);
 
-      String path = serviceNs.get(0).replace(".", "/");
-      Path serviceDirZip = zipFs.getPath(path);
+    Callable<ToolContext> generate = () -> {
+      // should be fixed with cxf version 3.2.5
+      JAXWSBindingSerializer.register(); // Bug fix for CXF-7695
+      WSDLToJava cxfGenerator = new WSDLToJava(args.toArray(new String[args.size()]));
+      ToolContext cxfContext = new ToolContext() {
+          @Override
+          public void remove(String key) {
+            super.remove(key);
+            if (key.equals(ToolConstants.SERVICE_LIST)) {
+              // hack: pretend to be in client-jar mode so far: in order to get much of the local wsdl/xsd processing
+              super.remove(ToolConstants.CFG_CLIENT_JAR);
+            }
+          }
+      };
 
-      try (Stream<Path> walker = Files.walk(zipFs.getPath("/"), 1)) {
-        walker.filter(CxfClientGenerator::isSchemaFile)
-            .forEach(schemaPath -> {
-              try {
-                Files.move(schemaPath, serviceDirZip.resolve(schemaPath.getFileName()));
-              } catch (IOException ex) {
-                LOGGER.warn("Failed to move service definition files", ex);
-              }
-            });
-      }
+      
+     // cxfContext.put(ToolConstants.CFG_WSDLLIST, true);
+      cxfContext.put(ToolConstants.CFG_BINDING, new IvyGeneratorBindings(tmpGenDir).getBindings(options));
+      //cxfContext.put(ToolConstants.COMPILER, new JdtCxfCompiler(tmpGenDir));
+      options.nsMappings().forEach((k, v) -> cxfContext.addNamespacePackageMap(k, v));
+      cxfGenerator.run(cxfContext);
+
+      //appendSources(tmpClientJar);
+      //FixCXFSchemaLocation.fixLocalWsdlIfNecessary(tmpClientJar); // Bug fix for CXF-7706
+      moveLocalWsdlToService(tmpGenDir, cxfContext);
+
+      //clientJarUser.accept(tmpClientJar);
+      return cxfContext;
+    };
+
+    return withRedirectConfigurer(
+        withSchemaAccProperty(
+            withHttpPortFactory(
+                generate))).call();
+  }
+
+  private static void moveLocalWsdlToService(Path tmpGenDir, ToolContext cxfContext) throws Exception {
+    List<String> serviceNs = cxfContext.getJavaModel().getServiceClasses().values().stream()
+        .map(JavaServiceClass::getPackageName)
+        .collect(Collectors.toList());
+    if (serviceNs.size() != 1) {
+      // keep wsdl in root of jar
+      return;
+    }
+    
+    var container = new WSDLToJavaContainer(null, null);
+    var generateLocalWSDL = WSDLToJavaContainer.class.getDeclaredMethod("generateLocalWSDL", ToolContext.class);
+    cxfContext.put(ToolConstants.CFG_CLASSDIR, tmpGenDir.toAbsolutePath().toString());
+    generateLocalWSDL.setAccessible(true);
+    generateLocalWSDL.invoke(container, cxfContext);
+
+    String path = serviceNs.get(0).replace(".", "/");
+    Path serviceDirZip = tmpGenDir.resolve(path);
+    try (Stream<Path> walker = Files.walk(tmpGenDir, 1)) {
+      walker.filter(CxfClientGenerator::isSchemaFile)
+          .forEach(schemaPath -> {
+            try {
+              Files.move(schemaPath, serviceDirZip.resolve(schemaPath.getFileName()));
+            } catch (IOException ex) {
+              LOGGER.warn("Failed to move service definition files", ex);
+            }
+          });
     }
   }
 
