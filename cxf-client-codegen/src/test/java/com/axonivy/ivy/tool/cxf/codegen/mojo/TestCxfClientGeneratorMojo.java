@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
+import java.util.List;
 
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoTest;
@@ -28,7 +28,7 @@ class TestCxfClientGeneratorMojo {
   @Test
   void generate(@TempDir Path out) throws Exception {
     mojo.wsdl = TestCxfClientCodegen.class.getResource("IvyEchoService.WSDL").toURI().toString();
-    mojo.nsMappings = Map.of("urn:ws.test.ivyteam.ch", "com.acme.ivy.echo");
+    mojo.nsMappings = List.of("urn:ws.test.ivyteam.ch=com.acme.ivy.echo");
     mojo.outputDir = out;
     mojo.execute();
 

@@ -1,7 +1,9 @@
 package com.axonivy.ivy.tool.cxf.codegen.mojo;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.cxf.tools.common.ToolContext;
 import org.apache.maven.plugin.AbstractMojo;
@@ -42,9 +44,15 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
   @Parameter(property = "ivy.generate.webservice.client.output", required = true)
   Path outputDir;
 
-  // TODO: doc
+  /**
+   * Defines the reflection of WSDL namespaces to Java packages. The format is <code>namespace=package</code>.
+   * <pre>
+   * &lt;nsMappings&gt;&lt;nsMapping&gt;http://service.soap.connectivity.axonivy.com/=com.axonivy.person.client&lt;/nsMapping&gt;
+   * &lt;/nsMappings&gt;
+   * </pre>
+   */
   @Parameter(property = "ivy.generate.webservice.client.nsMappings")
-  Map<String, String> nsMappings;
+  List<String> nsMappings;
 
   /**
    * If the WSDL service definitions contains similar attributes only differing by
@@ -74,7 +82,7 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
     ToolContext cxfContext;
     try {
       cxfContext = CxfClientGenerator.generate(wsdl, outputDir,
-          new CodegenOpts(nsMappings, underscoreNames));
+          new CodegenOpts(mappings(), underscoreNames));
       getLog().info("Generated CXF client context: " + cxfContext);
     } catch (Exception ex) {
       getLog().error("Failed to generate CXF client sources", ex);
@@ -90,6 +98,15 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
     // if (!services.isEmpty()) {
     // context.config.setService(services.get(0));
     // }
+  }
+  
+  private Map<String, String> mappings() {
+    if (nsMappings == null) {
+      return Map.of();
+    }
+    return nsMappings.stream()
+        .map(s -> s.split("="))
+        .collect(Collectors.toMap(a -> a[0], a -> a[1]));
   }
 
 }
