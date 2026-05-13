@@ -212,33 +212,27 @@ class TestCxfClientCodegen {
     //       "publich int hashCode()");
   }
 
-
-  // @Test
-  // void generateWithComplexTypes() throws Exception {
-  //   String packageName = "com.microsoft.schemas.serialization.arrays";
-  //   String packageName2 = "com.microsoft.schemas._2003._10.serialization";
-  //   Map<String, String> mapping = new HashMap<>();
-  //   mapping.put("http://schemas.microsoft.com/2003/10/Serialization/Arrays", packageName);
-  //   AtomicReference<Path> fileRef = new AtomicReference<>(Path.of(""));
-  //   ToolContext meta = CxfClientGenerator.generate(this.getClass().getResource("infoshare/InfoShare.wsdl").toString(),
-  //       client -> {
-  //         assertThat(client).exists();
-  //         String pathPrefix = (packageName + "/").replace('.', '/');
-  //         String pathPrefix2 = (packageName2 + "/").replace('.', '/');
-  //         List<Path> entries = getJarContents(client);
-  //         Path root = entries.get(0);
-  //         Path servicePath = root.resolve("com/kendox/infoshare");
-  //         assertThat(entries).as("contains service descriptor as offline resources")
-  //             .contains(servicePath.resolve("InfoShare.wsdl"));
-  //         assertThat(entries).as("contains service descriptor imports as offline resources")
-  //             .contains(servicePath.resolve("schema1.xsd"));
-  //         assertThat(entries).as("contains mapped type class").contains(root.resolve(pathPrefix + "ArrayOfstring.class"));
-  //         assertThat(entries).as("contains non-mapped (default) type class").contains(root.resolve(pathPrefix2 + "ObjectFactory.class"));
-  //         fileRef.set(client);
-  //       },
-  //       new CodegenOpts(mapping, false));
-  //   assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("InfoShare");
-  // }
+  @Test
+  void generateWithComplexTypes(@TempDir Path tmpDir) throws Exception {
+    String packageName = "com.microsoft.schemas.serialization.arrays";
+    String packageName2 = "com.microsoft.schemas._2003._10.serialization";
+    Map<String, String> mapping = new HashMap<>();
+    mapping.put("http://schemas.microsoft.com/2003/10/Serialization/Arrays", packageName);
+    
+    var meta = CxfClientGenerator.generate(
+    this.getClass().getResource("infoshare/InfoShare.wsdl").toString(),
+    tmpDir, new CxfClientGenerator.CodegenOpts(mapping, false));
+    
+    assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("InfoShare");
+    
+    String pathPrefix = (packageName + "/").replace('.', '/');
+    String pathPrefix2 = (packageName2 + "/").replace('.', '/');
+    Path servicePath = tmpDir.resolve("com/kendox/infoshare");
+    assertThat(servicePath.resolve("InfoShare.wsdl")).exists();
+    assertThat(servicePath.resolve("schema1.xsd")).exists();
+    assertThat(tmpDir.resolve(pathPrefix + "ArrayOfstring.java")).exists();
+    assertThat(tmpDir.resolve(pathPrefix2 + "ObjectFactory.java")).exists();
+  }
 
   // @Test
   // void translateCxfGeneratorMetaToConfigModel() throws Exception {
