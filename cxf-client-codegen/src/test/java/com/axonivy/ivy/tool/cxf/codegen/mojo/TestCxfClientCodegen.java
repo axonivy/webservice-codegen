@@ -64,28 +64,6 @@ class TestCxfClientCodegen {
       .containsOnlyKeys("IvyEchoService");
   }
 
-  // @Test
-  // void executeGeneratedClient() throws Exception {
-  //   generate("http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService?wsdl",
-  //       client -> {
-  //         try (URLClassLoader clientCl = newClientJarClassLoader(client)) {
-  //           Class<?> serviceClass = clientCl.loadClass("ch.ivyteam.test.ws.IvyEchoService");
-  //           Object instance = serviceClass.getDeclaredConstructor().newInstance();
-  //           Object endpoint = MethodUtils.invokeMethod(instance, "getIvyEchoServiceHttpSoap11Endpoint");
-  //           Class<?> requestClass = clientCl.loadClass("ch.ivyteam.test.ws.schema.EchoString");
-  //           Object request = requestClass.getDeclaredConstructor().newInstance();
-  //           MethodUtils.invokeMethod(request, "setMessage", "hi CXF");
-  //           Object result = MethodUtils.invokeMethod(endpoint, "echoString", request);
-  //           Class<?> responseClass = clientCl.loadClass("ch.ivyteam.test.ws.schema.EchoStringResponse");
-  //           assertThat(result).isInstanceOf(responseClass);
-  //           Object returnValue = MethodUtils.invokeMethod(result, "getReturn");
-  //           assertThat(returnValue).isEqualTo("hi CXF");
-  //         } catch (Exception ex) {
-  //           throw new RuntimeException("failed to invoke CXF service", ex);
-  //         }
-  //       });
-  // }
-
   /**
    * Regression test that verifies that our preliminary solution to generate correct exception type works.
    * We filed a fix for CXF 3.2.2-SNAPSHOT
@@ -277,16 +255,14 @@ class TestCxfClientCodegen {
    * ISSUE XIVY-3117 CXF WebService Creation with included xsd
    * @throws Exception
    *
-   *           Fetching the initial WSDL and handling optional redirects to HTTPS is
-   *           well supported by our CXF client generator.
+   * Fetching the initial WSDL and handling optional redirects to HTTPS is
+   * well supported by our CXF client generator.
    *
-   *           However, for fetching internal XSD refs to HTTP, we need additional flags.
+   * However, for fetching internal XSD refs to HTTP, we need additional flags.
    *
-   *           e.g. <xs:include schemaLocation="http://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd" />
-   *           which redirects to 'https://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd
-   *
-   *           seeCxfClientGenerator.withRedirectConfigurer
-   *
+   * e.g. <xs:include schemaLocation="http://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd" />
+   * which redirects to 'https://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd
+   * seeCxfClientGenerator.withRedirectConfigurer
    */
   @Test
   void generateGeres_httpsRedirect(@TempDir Path tmpXsdSupplier) throws Exception {
