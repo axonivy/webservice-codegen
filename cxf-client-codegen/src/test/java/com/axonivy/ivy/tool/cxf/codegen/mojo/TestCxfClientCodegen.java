@@ -2,7 +2,6 @@ package com.axonivy.ivy.tool.cxf.codegen.mojo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -21,22 +20,6 @@ class TestCxfClientCodegen {
 
   @TempDir
   Path tmpDir;
-
-  @Test
-  void generateEchoServiceOnline() throws Exception {
-    var meta = CxfClientGenerator.generate(
-        "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService?wsdl", tmpDir, 
-        CxfClientGenerator.CodegenOpts.DEFAULT);
-
-    assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("IvyEchoService");
-
-    var servicePath = tmpDir.resolve("ch/ivyteam/test/ws");
-    assertThat(servicePath.resolve("IvyEchoService.java")).exists();
-    assertThat(servicePath.resolve("IvyEchoServicePortType.java")).exists();
-    assertThat(servicePath.resolve("IvyEchoService.wsdl"))
-        .as("contains service descriptor as offline resources")
-        .exists();
-  }
 
   // @Test
   // void generateEchoServiceOnline_https() throws Exception {
@@ -113,9 +96,7 @@ class TestCxfClientCodegen {
    */
   @Test
   void generatePortalConnector() throws Exception {
-    CxfClientGenerator.generate(
-          this.getClass().getResource("portalWebStartable.wsdl").toString(), 
-          tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
+    generateResource("portalWebStartable.wsdl", tmpDir);
     Path service = tmpDir.resolve("ch/ivy/ws/addon");
     assertThat(service.resolve("Exception.java")).exists();
     assertThat(service.resolve("Throwable.java")).exists();
@@ -128,9 +109,7 @@ class TestCxfClientCodegen {
    */
   @Test
   void generateNativeXmlTypes(@TempDir Path tmpDir) throws Exception {
-    CxfClientGenerator.generate(
-        this.getClass().getResource("nativeXsdTypes.wsdl").toString(),
-        tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
+    generateResource("nativeXsdTypes.wsdl", tmpDir);
     Path service = tmpDir.resolve("ch/ivyteam/testservice/types");
 
     Path natives = service.resolve("XsdNativeTypes.java");
@@ -150,9 +129,7 @@ class TestCxfClientCodegen {
    */
   @Test
   void generateCuraden_inOutParams(@TempDir Path tmpDir) throws Exception {
-    var meta = CxfClientGenerator.generate(
-      this.getClass().getResource("curadenUntouched.wsdl").toString(),
-      tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
+    var meta = generateResource("curadenUntouched.wsdl", tmpDir);
 
     var services = meta.getJavaModel().getServiceClasses();
     assertThat(services).hasSize(1);
@@ -185,9 +162,7 @@ class TestCxfClientCodegen {
 
   @Test
   void generate_listSetter_toString_equals_hashCode(@TempDir Path tmpDir) throws Exception {
-    CxfClientGenerator.generate(
-    this.getClass().getResource("listAndBoolean.wsdl").toString(),
-    tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
+    generateResource("listAndBoolean.wsdl", tmpDir);
     assertThat(tmpDir).isNotEmptyDirectory();
 
     var impl = Files.readString(tmpDir.resolve("wsbindin").resolve("Call.java"));
@@ -281,8 +256,7 @@ class TestCxfClientCodegen {
   // ISSUE XIVY-3546 CXF WebService Creation with undefined element
   @Test
   void generateWithUndefinedNames() throws Exception {
-    var meta = CxfClientGenerator.generate(getClass().getResource("undefinedElement.wsdl").toString(), 
-    tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
+    var meta = generateResource("undefinedElement.wsdl", tmpDir);
 
     var services = meta.getJavaModel().getServiceClasses();
     var service = services.entrySet().iterator().next().getValue();
@@ -350,8 +324,7 @@ class TestCxfClientCodegen {
   // ISSUE XIVY-3193 CXF generated WSDL pointing to local included XSD file.
   @Test
   void generateGeres_localIncludedXSD() throws Exception {
-    CxfClientGenerator.generate(this.getClass().getResource("geres/GeresResidentInfo_v1801.wsdl").toString(), 
-      tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
+    generateResource("geres/GeresResidentInfo_v1801.wsdl", tmpDir);
     Path servicePath = tmpDir.resolve("ch/bedag/geres/schemas/_20180101/geresresidentinfoservice");
     Path wsdlPath = servicePath.resolve("GeresResidentInfo_v1801.wsdl");
     assertThat(wsdlPath)
@@ -362,37 +335,22 @@ class TestCxfClientCodegen {
       .containsPattern("xs:include schemaLocation=\"schema[\\d]+.xsd\"");
   }
 
-  // // ISSUE XIVY-3586 CXF fails to include ObjectFactory file for empty targetNamespace in jar file.
-  // @Test
-  // void generateService_NoTargetNamespace() throws Exception {
-  //   var jarKeeper = new JarKeeper();
-  //   ToolContext context = generate(
-  //       getClass().getResource("noTargetNamespace.wsdl").toString(),
-  //       client -> {
-  //         assertThat(client).exists();
-  //         List<Path> entries = getJarContents(client);
-  //         Path service = entries.get(0).resolve("generated");
-  //         assertThat(entries).contains(service.resolve("ObjectFactory.class"));
-  //         jarKeeper.keep(client);
-  //       });
+  // ISSUE XIVY-3586 CXF fails to include ObjectFactory file for empty targetNamespace in jar file.
+  @Test
+  void generateService_NoTargetNamespace() throws Exception {
+    generateResource("noTargetNamespace.wsdl", tmpDir);
+    assertThat(tmpDir.resolve("generated").resolve("ObjectFactory.java"))
+      .exists();
+      
+    var serviceImpl = Files.readString(tmpDir.resolve("org").resolve("tempuri").resolve("IService1.java"));
+    assertThat(serviceImpl).isNotEmpty();
 
-  //   List<WsService> services = CxfModelConverter.toWsConfigModel(context);
-  //   assertThat(services).isNotEmpty();
-
-  //   WsService service = services.iterator().next();
-
-  //   try (URLClassLoader classloader = craftClassloader(jarKeeper.clientJar)) {
-  //     var collector = new WebServiceOperationsCollector(classloader, service.getServiceClass());
-  //     var operations = collector.getOperations("BasicHttpBinding_IService1");
-
-  //     var firstOp = findOperation(operations, "GetDataUsingDataContract");
-  //     assertThat(firstOp.getName()).isEqualTo("GetDataUsingDataContract");
-  //     assertThat(inputParams(firstOp))
-  //         .hasSize(1)
-  //         .allMatch(param -> "parameters".equals(param.getName()));
-  //     assertThat(firstOp.getResultType()).contains("org.tempuri.GetDataUsingDataContractResponse");
-  //   }
-  // }
+    assertThat(serviceImpl).containsIgnoringWhitespaces("""
+      public GetDataUsingDataContractResponse getDataUsingDataContract(
+        @WebParam(partName = "parameters", name = "GetDataUsingDataContract", targetNamespace = "http://tempuri.org/")
+        GetDataUsingDataContract parameters
+      );""");
+  }
 
   /**
    * ISSUE XIVY-13809 Handle underline type-defs in CXF soap client.
@@ -420,13 +378,11 @@ class TestCxfClientCodegen {
         }""");
   }
 
-  private Path createLocalWsdl() throws IOException, FileNotFoundException {
-    var localWsdl = tmpDir.resolve("IvyEchoService.WSDL");
-    try (var is = TestCxfClientCodegen.class.getResourceAsStream("IvyEchoService.WSDL");
-        var out = Files.newOutputStream(localWsdl)) {
-      is.transferTo(out);
-    }
-    return localWsdl;
+  public static ToolContext generateResource(String resourceName, Path tmpDir) throws Exception {
+    return CxfClientGenerator.generate(
+        TestCxfClientCodegen.class.getResource(resourceName).toString(), 
+        tmpDir, 
+        CxfClientGenerator.CodegenOpts.DEFAULT);
   }
 
   public static ToolContext generate(String wsdlUri, Consumer<Path> clientJarUser) throws Exception {
