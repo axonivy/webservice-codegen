@@ -46,22 +46,7 @@ public class CxfClientGenerator {
   public record CodegenOpts(Map<String, String> nsMappings, boolean underscoreNames) {
     public static CodegenOpts DEFAULT = new CodegenOpts(Map.of(), false);
   }
-
-  public static ToolContext generate(String wsdlUri, Consumer<Path> clientJarUser, CodegenOpts options) throws Exception {
-    var tmpGenDir = Files.createTempDirectory("cxfClient");
-    try {
-      var tmpClientJar = tmpGenDir.resolve("client.jar");
-      var toolContext =  generate(wsdlUri, tmpGenDir, options);
-      clientJarUser.accept(tmpClientJar);
-      return toolContext;
-    } finally {
-      Files.walk(tmpGenDir)
-          .sorted(Comparator.reverseOrder())
-          .map(Path::toFile)
-          .forEach(File::delete);
-    }
-  }
-
+  
   public static ToolContext generate(String wsdlUri, Path tmpGenDir, CodegenOpts options) throws Exception {
     List<String> args = Arrays.asList(
         "-d", tmpGenDir.toAbsolutePath().toString(), // outputDir

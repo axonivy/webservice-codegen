@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 import org.apache.cxf.tools.common.ToolContext;
@@ -405,7 +404,4 @@ public class TestCxfClientCodegen {
         CxfClientGenerator.CodegenOpts.DEFAULT);
   }
 
-  public static ToolContext generate(String wsdlUri, Consumer<Path> clientJarUser) throws Exception {
-    return CxfClientGenerator.generate(wsdlUri, clientJarUser, CxfClientGenerator.CodegenOpts.DEFAULT);
-  }
 }
