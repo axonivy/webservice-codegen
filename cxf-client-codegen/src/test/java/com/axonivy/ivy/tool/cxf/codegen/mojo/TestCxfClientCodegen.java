@@ -114,28 +114,23 @@ class TestCxfClientCodegen {
     var service = services.entrySet().iterator().next().getValue();
     Path generated = tmpDir.resolve(service.getFullClassName().replace(".", "/") + ".java");
     var serviceImpl = Files.readString(generated);
-    assertThat(serviceImpl).isNotEmpty();
-    
-    // try (URLClassLoader classloader = craftClassloader(jarKeeper.clientJar)) {
-    //   var collector = new WebServiceOperationsCollector(classloader, service.getServiceClass());
+    assertThat(serviceImpl).contains("public AsAxonIVYObj getAsAxonIVYObj() {");
 
-    //   var operations = collector.getOperations("asAxonIVYObj");
-    //   var firstOp = findOperation(operations, "getLanguage");
-
-    //   assertThat(firstOp.getName()).isEqualTo("getLanguage");
-    //   assertThat(firstOp.getParameters()).isNotEmpty();
-    //   assertThat(firstOp.getParameters().stream().filter(param -> param.getMode() == Mode.IN).map(WsParameterDesc::getName))
-    //       .as("params without a mode are 'normal' input params")
-    //       .contains("ipSprcd");
-
-    //   assertThat(firstOp.getParameters().stream()
-    //       .filter(param -> param.getMode() != null)
-    //       .map(WsParameterDesc::getName))
-    //           .as("params with non 'input' mode are still recognized as such")
-    //           .contains("opERROR", "opMESSAGE", "ttSprcd");
-
-    //   assertThat(firstOp.getResultType()).isEqualTo("void");
-    // }
+    var axonIvyObj = Files.readString(generated.getParent().resolve("AsAxonIVYObj.java"));
+    assertThat(axonIvyObj)
+      .as("in and out parameters happily co-exist")
+      .containsIgnoringWhitespaces("""
+      public void getLanguage(
+          @WebParam(partName = "ipSprcd", name = "ipSprcd")
+          int ipSprcd,
+          @WebParam(partName = "opERROR", mode = WebParam.Mode.OUT, name = "opERROR")
+          javax.xml.ws.Holder<java.lang.Boolean> opERROR,
+          @WebParam(partName = "opMESSAGE", mode = WebParam.Mode.OUT, name = "opMESSAGE")
+          javax.xml.ws.Holder<java.lang.String> opMESSAGE,
+          @WebParam(partName = "ttSprcd", mode = WebParam.Mode.OUT, name = "ttSprcd")
+          javax.xml.ws.Holder<acticleinsert.asaxonivy.GetLanguageTtSprcdParam> ttSprcd
+      ) throws FaultDetailMessage;"""
+    );
   }
 
   @Test
