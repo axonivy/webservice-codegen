@@ -32,7 +32,7 @@ public class TestCxfClientCodegen {
     Integer[] ports = IntStream.rangeClosed(3333, 3333 + 20).boxed().toArray(Integer[]::new);
     mock = new ClientAndServer(ports);
     mockBaseUrl = "http://localhost:" + mock.getPort();
-    mockResources(mock);
+    mockResources();
   }
 
   @AfterAll
@@ -40,7 +40,7 @@ public class TestCxfClientCodegen {
     mock.stop();
   }
 
-  static void mockResources(ClientAndServer mock) {
+  static void mockResources() {
     mock.when(request())
         .respond(httpRequest -> {
           var resourcePath = httpRequest.getPath().getValue().replaceFirst("^/wsdl/", "");
@@ -56,7 +56,7 @@ public class TestCxfClientCodegen {
   @Test
   void generateEchoServiceFromWebResource() throws Exception {
     var meta = CxfClientGenerator.generate(
-        mockBaseUrl+"/wsdl/IvyEchoService.WSDL", tmpDir,
+        mockBaseUrl + "/wsdl/IvyEchoService.WSDL", tmpDir,
         CxfClientGenerator.CodegenOpts.DEFAULT);
 
     assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("IvyEchoService");
@@ -71,45 +71,44 @@ public class TestCxfClientCodegen {
 
   // @Test
   // void generateEchoServiceOnline_https() throws Exception {
-  //   var fileRef = new AtomicReference<>(Path.of(""));
-  //   boolean insecure = SSLUtil.isInsecureSSLenabled();
-  //   assertThat(insecure).isFalse();
-  //   try {
-  //     SSLUtil.enableInsecureSSL(true);
-  //     ToolContext meta = generate("https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService?wsdl",
-  //         client -> {
-  //           assertThat(client).exists();
-  //           List<Path> entries = getJarContents(client);
-  //           Path servicePath = entries.get(0).resolve("ch/ivyteam/test/ws/");
-  //           assertThat(entries).as("contains service descriptor as offline resources").contains(servicePath.resolve("IvyEchoService.wsdl"));
-  //           assertThat(entries).as("contains service binary").contains(servicePath.resolve("IvyEchoService.class"));
-  //           assertThat(entries).as("contains service source").contains(servicePath.resolve("IvyEchoService.java"));
-  //           fileRef.set(client);
-  //         });
-  //     assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("IvyEchoService");
-  //     assertThat(fileRef.get()).as("client jar is cleaned up after consumption").doesNotExist();
-  //   } finally {
-  //     SSLUtil.enableInsecureSSL(insecure);
-  //   }
+  // var fileRef = new AtomicReference<>(Path.of(""));
+  // boolean insecure = SSLUtil.isInsecureSSLenabled();
+  // assertThat(insecure).isFalse();
+  // try {
+  // SSLUtil.enableInsecureSSL(true);
+  // ToolContext meta = generate("https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService?wsdl",
+  // client -> {
+  // assertThat(client).exists();
+  // List<Path> entries = getJarContents(client);
+  // Path servicePath = entries.get(0).resolve("ch/ivyteam/test/ws/");
+  // assertThat(entries).as("contains service descriptor as offline resources").contains(servicePath.resolve("IvyEchoService.wsdl"));
+  // assertThat(entries).as("contains service binary").contains(servicePath.resolve("IvyEchoService.class"));
+  // assertThat(entries).as("contains service source").contains(servicePath.resolve("IvyEchoService.java"));
+  // fileRef.set(client);
+  // });
+  // assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("IvyEchoService");
+  // assertThat(fileRef.get()).as("client jar is cleaned up after consumption").doesNotExist();
+  // } finally {
+  // SSLUtil.enableInsecureSSL(insecure);
+  // }
   // }
 
   @Test
-  void generateWithPackageMapping(@TempDir Path tmpDir) throws Exception {
+  void generateWithPackageMapping() throws Exception {
     Map<String, String> mapping = new HashMap<>();
     String packageName = "ch.ivyteam.testmapping.service";
     mapping.put("urn:ws.test.ivyteam.ch", packageName);
     mapping.put("urn:schema.ws.test.ivyteam.ch", "ch.ivyteam.testmapping.schema");
     ToolContext meta = CxfClientGenerator.generate(
-      mockBaseUrl+"/wsdl/IvyEchoService.WSDL", tmpDir,
+        mockBaseUrl + "/wsdl/IvyEchoService.WSDL", tmpDir,
         new CxfClientGenerator.CodegenOpts(mapping, false));
-
 
     String pathPrefix = (packageName + "/").replace('.', '/');
     Path servicePath = tmpDir.resolve(pathPrefix);
     assertThat(servicePath.resolve("IvyEchoService.java")).exists();
     assertThat(servicePath.resolve("IvyEchoService.wsdl")).exists();
     assertThat(meta.getJavaModel().getServiceClasses())
-      .containsOnlyKeys("IvyEchoService");
+        .containsOnlyKeys("IvyEchoService");
   }
 
   /**
@@ -134,19 +133,19 @@ public class TestCxfClientCodegen {
    * @throws Exception
    */
   @Test
-  void generateNativeXmlTypes(@TempDir Path tmpDir) throws Exception {
+  void generateNativeXmlTypes() throws Exception {
     generateResource("nativeXsdTypes.wsdl", tmpDir);
     Path service = tmpDir.resolve("ch/ivyteam/testservice/types");
 
     Path natives = service.resolve("XsdNativeTypes.java");
     assertThat(natives).exists();
     assertThat(Files.readString(natives))
-      .contains("import ch.ivyteam.ivy.scripting.objects.DateTime;")
-      .contains("protected DateTime dateTime;")
-      .contains("import ch.ivyteam.ivy.scripting.objects.Time;")
-      .contains("protected Time time;")
-      .contains("import ch.ivyteam.ivy.scripting.objects.Date;")
-      .contains("protected Date date;");
+        .contains("import ch.ivyteam.ivy.scripting.objects.DateTime;")
+        .contains("protected DateTime dateTime;")
+        .contains("import ch.ivyteam.ivy.scripting.objects.Time;")
+        .contains("protected Time time;")
+        .contains("import ch.ivyteam.ivy.scripting.objects.Date;")
+        .contains("protected Date date;");
   }
 
   /**
@@ -154,7 +153,7 @@ public class TestCxfClientCodegen {
    * @throws Exception
    */
   @Test
-  void generateCuraden_inOutParams(@TempDir Path tmpDir) throws Exception {
+  void generateCuraden_inOutParams() throws Exception {
     var meta = generateResource("curadenUntouched.wsdl", tmpDir);
 
     var services = meta.getJavaModel().getServiceClasses();
@@ -166,62 +165,60 @@ public class TestCxfClientCodegen {
 
     var axonIvyObj = Files.readString(generated.getParent().resolve("AsAxonIVYObj.java"));
     assertThat(axonIvyObj)
-      .as("in and out parameters happily co-exist")
-      .containsIgnoringWhitespaces("""
-      public void getLanguage(
-          @WebParam(partName = "ipSprcd", name = "ipSprcd")
-          int ipSprcd,
-          @WebParam(partName = "opERROR", mode = WebParam.Mode.OUT, name = "opERROR")
-          javax.xml.ws.Holder<java.lang.Boolean> opERROR,
-          @WebParam(partName = "opMESSAGE", mode = WebParam.Mode.OUT, name = "opMESSAGE")
-          javax.xml.ws.Holder<java.lang.String> opMESSAGE,
-          @WebParam(partName = "ttSprcd", mode = WebParam.Mode.OUT, name = "ttSprcd")
-          javax.xml.ws.Holder<acticleinsert.asaxonivy.GetLanguageTtSprcdParam> ttSprcd
-      ) throws FaultDetailMessage;"""
-    );
+        .as("in and out parameters happily co-exist")
+        .containsIgnoringWhitespaces("""
+          public void getLanguage(
+              @WebParam(partName = "ipSprcd", name = "ipSprcd")
+              int ipSprcd,
+              @WebParam(partName = "opERROR", mode = WebParam.Mode.OUT, name = "opERROR")
+              javax.xml.ws.Holder<java.lang.Boolean> opERROR,
+              @WebParam(partName = "opMESSAGE", mode = WebParam.Mode.OUT, name = "opMESSAGE")
+              javax.xml.ws.Holder<java.lang.String> opMESSAGE,
+              @WebParam(partName = "ttSprcd", mode = WebParam.Mode.OUT, name = "ttSprcd")
+              javax.xml.ws.Holder<acticleinsert.asaxonivy.GetLanguageTtSprcdParam> ttSprcd
+          ) throws FaultDetailMessage;""");
   }
 
   @Test
-  void generate_listSetter_toString_equals_hashCode(@TempDir Path tmpDir) throws Exception {
+  void generate_listSetter_toString_equals_hashCode() throws Exception {
     generateResource("listAndBoolean.wsdl", tmpDir);
     assertThat(tmpDir).isNotEmptyDirectory();
 
     var impl = Files.readString(tmpDir.resolve("wsbindin").resolve("Call.java"));
     assertThat(impl)
-      .as("list getters and setters")
-      .contains(
-        "public List<String> getNames()"
-    //  , "public void setNames(List<String> names)"
-    );
+        .as("list getters and setters")
+        .contains(
+            "public List<String> getNames()",
+          "public void setNames(List<String> value)"
+        );
 
     assertThat(impl)
         .as("wrapper types getters and setters")
         .contains(
-          "public Boolean isMale()", 
-          "public void setMale(Boolean value)"
-        );
-    // TODO: support again!
-    // assertThat(impl)
-    //     .as("implements common object identifiers")
-    //     .contains(
-    //       "public String toString()", 
-    //       "public boolean equals(Object obj)", 
-    //       "publich int hashCode()");
+            "public Boolean isMale()",
+            "public void setMale(Boolean value)");
+
+    assertThat(impl)
+        .as("implements common object identifiers")
+        .contains(
+            "public String toString()",
+            "public boolean equals(Object that)",
+            "public int hashCode()");
   }
 
   @Test
-  void generateWithComplexTypes(@TempDir Path tmpDir) throws Exception {
+  void generateWithComplexTypes() throws Exception {
     String packageName = "com.microsoft.schemas.serialization.arrays";
     String packageName2 = "com.microsoft.schemas._2003._10.serialization";
     Map<String, String> mapping = new HashMap<>();
     mapping.put("http://schemas.microsoft.com/2003/10/Serialization/Arrays", packageName);
-    
+
     var meta = CxfClientGenerator.generate(
-    this.getClass().getResource("infoshare/InfoShare.wsdl").toString(),
-    tmpDir, new CxfClientGenerator.CodegenOpts(mapping, false));
-    
+        this.getClass().getResource("infoshare/InfoShare.wsdl").toString(),
+        tmpDir, new CxfClientGenerator.CodegenOpts(mapping, false));
+
     assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("InfoShare");
-    
+
     String pathPrefix = (packageName + "/").replace('.', '/');
     String pathPrefix2 = (packageName2 + "/").replace('.', '/');
     Path servicePath = tmpDir.resolve("com/kendox/infoshare");
@@ -233,45 +230,45 @@ public class TestCxfClientCodegen {
 
   // @Test
   // void translateCxfGeneratorMetaToConfigModel() throws Exception {
-  //   var wsdlFile = createLocalWsdl();
-  //   var jarKeeper = new JarKeeper();
-  //   ToolContext meta = generate(wsdlFile.toUri().toASCIIString(), jarKeeper::keep);
-  //   List<WsService> services = CxfModelConverter.toWsConfigModel(meta);
-  //   assertThat(services.size()).isEqualTo(1);
-  //   WsService echoService = services.get(0);
-  //   assertThat(echoService.getServiceClass()).isEqualTo("ch.ivyteam.test.ws.IvyEchoService");
-  //   assertThat(echoService.getPorts().stream().map(WsPort::getName)).containsOnly(
-  //       "IvyEchoServiceHttpsEndpoint",
-  //       "IvyEchoServiceHttpsSoap11Endpoint",
-  //       "IvyEchoServiceHttpsSoap12Endpoint",
-  //       "IvyEchoServiceHttpEndpoint",
-  //       "IvyEchoServiceHttpSoap11Endpoint",
-  //       "IvyEchoServiceHttpSoap12Endpoint");
-  //   assertThat(echoService.getPorts().stream().map(WsPort::getLocationUri)).containsOnly(
-  //       "https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsSoap11Endpoint/",
-  //       "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpSoap11Endpoint/",
-  //       "https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsSoap12Endpoint/",
-  //       "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpSoap12Endpoint/",
-  //       "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpEndpoint/",
-  //       "https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsEndpoint/");
-  //   WsPort soap11 = echoService.getPorts().get(0);
-  //   assertThat(soap11.getLocationUri()).contains("test-webservices.ivyteam.io:8443");
-  //   assertThat(soap11.getName()).isEqualTo("IvyEchoServiceHttpsSoap11Endpoint");
-  //   WsService service = services.iterator().next();
+  // var wsdlFile = createLocalWsdl();
+  // var jarKeeper = new JarKeeper();
+  // ToolContext meta = generate(wsdlFile.toUri().toASCIIString(), jarKeeper::keep);
+  // List<WsService> services = CxfModelConverter.toWsConfigModel(meta);
+  // assertThat(services.size()).isEqualTo(1);
+  // WsService echoService = services.get(0);
+  // assertThat(echoService.getServiceClass()).isEqualTo("ch.ivyteam.test.ws.IvyEchoService");
+  // assertThat(echoService.getPorts().stream().map(WsPort::getName)).containsOnly(
+  // "IvyEchoServiceHttpsEndpoint",
+  // "IvyEchoServiceHttpsSoap11Endpoint",
+  // "IvyEchoServiceHttpsSoap12Endpoint",
+  // "IvyEchoServiceHttpEndpoint",
+  // "IvyEchoServiceHttpSoap11Endpoint",
+  // "IvyEchoServiceHttpSoap12Endpoint");
+  // assertThat(echoService.getPorts().stream().map(WsPort::getLocationUri)).containsOnly(
+  // "https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsSoap11Endpoint/",
+  // "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpSoap11Endpoint/",
+  // "https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsSoap12Endpoint/",
+  // "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpSoap12Endpoint/",
+  // "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpEndpoint/",
+  // "https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsEndpoint/");
+  // WsPort soap11 = echoService.getPorts().get(0);
+  // assertThat(soap11.getLocationUri()).contains("test-webservices.ivyteam.io:8443");
+  // assertThat(soap11.getName()).isEqualTo("IvyEchoServiceHttpsSoap11Endpoint");
+  // WsService service = services.iterator().next();
 
-  //   try (URLClassLoader classloader = craftClassloader(jarKeeper.clientJar)) {
-  //     var collector = new WebServiceOperationsCollector(classloader, service.getServiceClass());
-  //     var operations = collector.getOperations("IvyEchoServiceHttpsSoap11Endpoint");
-  //     assertThat(operations.stream().map(IWebServiceOperation::getName)).containsOnly(
-  //         "waitFor", "getSessionId", "echoDate", "getHelloMessage",
-  //         "returnNullObject", "returnVoid", "logMessageToStdOut", "echoObject", "echoString");
-  //     var echoString = findOperation(operations, "echoString");
-  //     assertThat(inputParams(echoString)).hasSize(1);
-  //     assertThat(inputParams(echoString).get(0).getName()).isEqualTo("parameters");
-  //     assertThat(inputParams(echoString).get(0).getType().getName())
-  //         .isEqualTo("ch.ivyteam.test.ws.schema.EchoString");
-  //     assertThat(echoString.getResultType()).isEqualTo("ch.ivyteam.test.ws.schema.EchoStringResponse");
-  //   }
+  // try (URLClassLoader classloader = craftClassloader(jarKeeper.clientJar)) {
+  // var collector = new WebServiceOperationsCollector(classloader, service.getServiceClass());
+  // var operations = collector.getOperations("IvyEchoServiceHttpsSoap11Endpoint");
+  // assertThat(operations.stream().map(IWebServiceOperation::getName)).containsOnly(
+  // "waitFor", "getSessionId", "echoDate", "getHelloMessage",
+  // "returnNullObject", "returnVoid", "logMessageToStdOut", "echoObject", "echoString");
+  // var echoString = findOperation(operations, "echoString");
+  // assertThat(inputParams(echoString)).hasSize(1);
+  // assertThat(inputParams(echoString).get(0).getName()).isEqualTo("parameters");
+  // assertThat(inputParams(echoString).get(0).getType().getName())
+  // .isEqualTo("ch.ivyteam.test.ws.schema.EchoString");
+  // assertThat(echoString.getResultType()).isEqualTo("ch.ivyteam.test.ws.schema.EchoStringResponse");
+  // }
   // }
 
   // ISSUE XIVY-3546 CXF WebService Creation with undefined element
@@ -284,7 +281,7 @@ public class TestCxfClientCodegen {
     Path generated = tmpDir.resolve(service.getFullClassName().replace(".", "/") + ".java");
     var serviceImpl = Files.readString(generated);
     assertThat(serviceImpl)
-      .contains("public PersonService getPersonServicePort()");
+        .contains("public PersonService getPersonServicePort()");
 
     var personService = Files.readString(generated.getParent().resolve("PersonService.java"));
     assertThat(personService).containsIgnoringWhitespaces("""
@@ -298,20 +295,20 @@ public class TestCxfClientCodegen {
    * ISSUE XIVY-3117 CXF WebService Creation with included xsd
    * @throws Exception
    *
-   * Fetching the initial WSDL and handling optional redirects to HTTPS is
-   * well supported by our CXF client generator.
+   *           Fetching the initial WSDL and handling optional redirects to HTTPS is
+   *           well supported by our CXF client generator.
    *
-   * However, for fetching internal XSD refs to HTTP, we need additional flags.
+   *           However, for fetching internal XSD refs to HTTP, we need additional flags.
    *
-   * e.g. <xs:include schemaLocation="http://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd" />
-   * which redirects to 'https://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd
-   * seeCxfClientGenerator.withRedirectConfigurer
+   *           e.g. <xs:include schemaLocation="http://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd" />
+   *           which redirects to 'https://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd
+   *           seeCxfClientGenerator.withRedirectConfigurer
    */
   @Test
   void generateGeres_httpsRedirect(@TempDir Path tmpXsdSupplier) throws Exception {
     Path httpsWsdl = httpsXsdRedirect(tmpXsdSupplier);
-    var meta = CxfClientGenerator.generate(httpsWsdl.toString(), 
-    tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
+    var meta = CxfClientGenerator.generate(httpsWsdl.toString(),
+        tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
 
     var services = meta.getJavaModel().getServiceClasses();
     var service = services.entrySet().iterator().next().getValue();
@@ -322,10 +319,10 @@ public class TestCxfClientCodegen {
 
     var portType = Files.readString(generated.getParent().resolve("ResidentInfoPortType.java"));
     assertThat(portType).containsIgnoringWhitespaces("""
-    public ResidentInfoFastResponse residentInfoFast(
-        @WebParam(partName = "parameters", name = "ResidentInfoFast", targetNamespace = "http://geres.bedag.ch/schemas/20180101/GeresResidentInfoService")
-        ResidentInfoFast parameters
-    ) throws InvalidArgumentsFault, PermissionDeniedFault, InfrastructureFault""");
+      public ResidentInfoFastResponse residentInfoFast(
+          @WebParam(partName = "parameters", name = "ResidentInfoFast", targetNamespace = "http://geres.bedag.ch/schemas/20180101/GeresResidentInfoService")
+          ResidentInfoFast parameters
+      ) throws InvalidArgumentsFault, PermissionDeniedFault, InfrastructureFault""");
   }
 
   private static Path httpsXsdRedirect(Path tmpDir) throws IOException {
@@ -347,11 +344,11 @@ public class TestCxfClientCodegen {
     Path servicePath = tmpDir.resolve("ch/bedag/geres/schemas/_20180101/geresresidentinfoservice");
     Path wsdlPath = servicePath.resolve("GeresResidentInfo_v1801.wsdl");
     assertThat(wsdlPath)
-      .as("contains offline WSDL")
-      .exists();
+        .as("contains offline WSDL")
+        .exists();
     String wsdlContent = Files.readString(wsdlPath);
     assertThat(wsdlContent).as("contains offline XSD")
-      .containsPattern("xs:include schemaLocation=\"schema[\\d]+.xsd\"");
+        .containsPattern("xs:include schemaLocation=\"schema[\\d]+.xsd\"");
   }
 
   // ISSUE XIVY-3586 CXF fails to include ObjectFactory file for empty targetNamespace in jar file.
@@ -359,8 +356,8 @@ public class TestCxfClientCodegen {
   void generateService_NoTargetNamespace() throws Exception {
     generateResource("noTargetNamespace.wsdl", tmpDir);
     assertThat(tmpDir.resolve("generated").resolve("ObjectFactory.java"))
-      .exists();
-      
+        .exists();
+
     var serviceImpl = Files.readString(tmpDir.resolve("org").resolve("tempuri").resolve("IService1.java"));
     assertThat(serviceImpl).isNotEmpty();
 
@@ -383,24 +380,24 @@ public class TestCxfClientCodegen {
     CxfClientGenerator.generate(getClass().getResource("underscored.wsdl").toString(), tmpDir, opts);
     var bookImpl = Files.readString(tmpDir.resolve("com/cleverbuilder/bookservice/Book.java"));
     assertThat(bookImpl)
-      .as("getter for type natively without underscores")
-      .containsIgnoringWhitespaces("""
-        public String getPRICEDATE() {
-          return pricedate;
-        }""");
+        .as("getter for type natively without underscores")
+        .containsIgnoringWhitespaces("""
+          public String getPRICEDATE() {
+            return pricedate;
+          }""");
 
     assertThat(bookImpl)
-      .as("getter for type natively with underscore")
-      .containsIgnoringWhitespaces("""
-        public String getPRICE_DATE() {
-          return price_DATE;
-        }""");
+        .as("getter for type natively with underscore")
+        .containsIgnoringWhitespaces("""
+          public String getPRICE_DATE() {
+            return price_DATE;
+          }""");
   }
 
   public static ToolContext generateResource(String resourceName, Path tmpDir) throws Exception {
     return CxfClientGenerator.generate(
-        TestCxfClientCodegen.class.getResource(resourceName).toString(), 
-        tmpDir, 
+        TestCxfClientCodegen.class.getResource(resourceName).toString(),
+        tmpDir,
         CxfClientGenerator.CodegenOpts.DEFAULT);
   }
 

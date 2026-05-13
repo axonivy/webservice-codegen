@@ -1,17 +1,15 @@
 package com.axonivy.ivy.tool.cxf.codegen;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import com.axonivy.ivy.tool.cxf.codegen.binding.IvyGeneratorBindings;
 import com.axonivy.ivy.tool.cxf.codegen.binding.JAXWSBindingSerializer;
 
-
 /**
  * Plain CXF client jar generator without any Eclipse or Ivy API involved.
  * @author rew
@@ -46,39 +43,38 @@ public class CxfClientGenerator {
   public record CodegenOpts(Map<String, String> nsMappings, boolean underscoreNames) {
     public static CodegenOpts DEFAULT = new CodegenOpts(Map.of(), false);
   }
-  
+
   public static ToolContext generate(String wsdlUri, Path tmpGenDir, CodegenOpts options) throws Exception {
     List<String> args = Arrays.asList(
         "-d", tmpGenDir.toAbsolutePath().toString(), // outputDir
         "-clientjar", tmpGenDir.resolve("client.jar").getFileName().toString(), // fake it till java sources are generated.
         "-autoNameResolution", // solve conflicts
         "-mark-generated", // @Generated annotation
-        //"-xjc-Xsetters", // JAXB2_basics plugin. Generates setter methods for collections
-        //"-xjc-Xcommons-lang", // JAXB2_commons_lang plugin. Generates toString, equals, hashCode methods
-        //"-xjc-Xcommons-lang:ToStringStyle=SHORT_PREFIX_STYLE",
+        "-xjc-Xsetters", // JAXB2_basics plugin. Generates setter methods for collections
+        "-xjc-Xcommons-lang", // JAXB2_commons_lang plugin. Generates toString, equals, hashCode methods
+        "-xjc-Xcommons-lang:ToStringStyle=SHORT_PREFIX_STYLE",
         wsdlUri);
 
     Callable<ToolContext> generate = () -> {
       // should be fixed with cxf version 3.2.5
       JAXWSBindingSerializer.register(); // Bug fix for CXF-7695
       WSDLToJava cxfGenerator = new WSDLToJava(args.toArray(new String[args.size()]));
-      ToolContext cxfContext = new ToolContext() {
-          @Override
-          public void remove(String key) {
-            super.remove(key);
-            if (key.equals(ToolConstants.SERVICE_LIST)) {
-              // hack: pretend to be in client-jar mode so far: in order to get much of the local wsdl/xsd processing
-              super.remove(ToolConstants.CFG_CLIENT_JAR);
-            }
+      ToolContext cxfContext = new ToolContext(){
+        @Override
+        public void remove(String key) {
+          super.remove(key);
+          if (ToolConstants.SERVICE_LIST.equals(key)) {
+            // hack: pretend to be in client-jar mode so far: in order to get much of the local wsdl/xsd processing
+            super.remove(ToolConstants.CFG_CLIENT_JAR);
           }
+        }
       };
 
-      
       cxfContext.put(ToolConstants.CFG_BINDING, new IvyGeneratorBindings(tmpGenDir).getBindings(options));
       options.nsMappings().forEach((k, v) -> cxfContext.addNamespacePackageMap(k, v));
       cxfGenerator.run(cxfContext);
 
-      //FixCXFSchemaLocation.fixLocalWsdlIfNecessary(tmpClientJar); // Bug fix for CXF-7706
+      // FixCXFSchemaLocation.fixLocalWsdlIfNecessary(tmpClientJar); // Bug fix for CXF-7706
       moveLocalWsdlToService(tmpGenDir, cxfContext);
 
       return cxfContext;
@@ -98,7 +94,7 @@ public class CxfClientGenerator {
       // keep wsdl in root of jar
       return;
     }
-    
+
     generateLocalWsdl(tmpGenDir, cxfContext); // hack; officialy only supported in client.jar mode
 
     String path = serviceNs.get(0).replace(".", "/");
