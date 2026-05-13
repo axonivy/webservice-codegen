@@ -347,22 +347,20 @@ class TestCxfClientCodegen {
     return httpsWsdl;
   }
 
-  // // ISSUE XIVY-3193 CXF generated WSDL pointing to local included XSD file.
-  // @Test
-  // void generateGeres_localIncludedXSD() throws Exception {
-  //   generate(this.getClass().getResource("geres/GeresResidentInfo_v1801.wsdl").toString(),
-  //       client -> {
-  //         assertThat(client).exists();
-  //         List<Path> entries = getJarContents(client);
-  //         Path root = entries.get(0);
-  //         Path servicePath = root.resolve("ch/bedag/geres/schemas/_20180101/geresresidentinfoservice");
-  //         Path wsdlPath = servicePath.resolve("GeresResidentInfo_v1801.wsdl");
-  //         assertThat(entries).as("contains offline WSDL").contains(wsdlPath);
-  //         String wsdlContent = getFileContentFromJarFile(client, "GeresResidentInfo_v1801.wsdl");
-  //         assertThat(wsdlContent).as("contains offline XSD")
-  //             .containsPattern("xs:include schemaLocation=\"schema[\\d]+.xsd\"");
-  //       });
-  // }
+  // ISSUE XIVY-3193 CXF generated WSDL pointing to local included XSD file.
+  @Test
+  void generateGeres_localIncludedXSD() throws Exception {
+    CxfClientGenerator.generate(this.getClass().getResource("geres/GeresResidentInfo_v1801.wsdl").toString(), 
+      tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
+    Path servicePath = tmpDir.resolve("ch/bedag/geres/schemas/_20180101/geresresidentinfoservice");
+    Path wsdlPath = servicePath.resolve("GeresResidentInfo_v1801.wsdl");
+    assertThat(wsdlPath)
+      .as("contains offline WSDL")
+      .exists();
+    String wsdlContent = Files.readString(wsdlPath);
+    assertThat(wsdlContent).as("contains offline XSD")
+      .containsPattern("xs:include schemaLocation=\"schema[\\d]+.xsd\"");
+  }
 
   // // ISSUE XIVY-3586 CXF fails to include ObjectFactory file for empty targetNamespace in jar file.
   // @Test
