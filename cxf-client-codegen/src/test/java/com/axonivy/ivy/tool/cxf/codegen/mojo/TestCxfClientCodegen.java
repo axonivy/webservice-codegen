@@ -168,40 +168,44 @@ class TestCxfClientCodegen {
       .contains("protected Date date;");
   }
 
-  // /**
-  //  * ISSUE XIVY-2856 Call WS methods that can only be generated in wrapper style
-  //  * @throws Exception
-  //  */
-  // @Test
-  // void generateCuraden_inOutParams() throws Exception {
-  //   var jarKeeper = new JarKeeper();
-  //   ToolContext context = generate(getClass().getResource("curadenUntouched.wsdl").toString(), jarKeeper::keep);
+  /**
+   * ISSUE XIVY-2856 Call WS methods that can only be generated in wrapper style
+   * @throws Exception
+   */
+  @Test
+  void generateCuraden_inOutParams(@TempDir Path tmpDir) throws Exception {
+    var meta = CxfClientGenerator.generate(
+      this.getClass().getResource("curadenUntouched.wsdl").toString(),
+      tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
 
-  //   List<WsService> services = CxfModelConverter.toWsConfigModel(context);
-  //   assertThat(services).isNotEmpty();
+    var services = meta.getJavaModel().getServiceClasses();
+    assertThat(services).hasSize(1);
+    var service = services.entrySet().iterator().next().getValue();
+    Path generated = tmpDir.resolve(service.getFullClassName().replace(".", "/") + ".java");
+    var serviceImpl = Files.readString(generated);
+    assertThat(serviceImpl).isNotEmpty();
+    
+    // try (URLClassLoader classloader = craftClassloader(jarKeeper.clientJar)) {
+    //   var collector = new WebServiceOperationsCollector(classloader, service.getServiceClass());
 
-  //   WsService service = services.iterator().next();
-  //   try (URLClassLoader classloader = craftClassloader(jarKeeper.clientJar)) {
-  //     var collector = new WebServiceOperationsCollector(classloader, service.getServiceClass());
+    //   var operations = collector.getOperations("asAxonIVYObj");
+    //   var firstOp = findOperation(operations, "getLanguage");
 
-  //     var operations = collector.getOperations("asAxonIVYObj");
-  //     var firstOp = findOperation(operations, "getLanguage");
+    //   assertThat(firstOp.getName()).isEqualTo("getLanguage");
+    //   assertThat(firstOp.getParameters()).isNotEmpty();
+    //   assertThat(firstOp.getParameters().stream().filter(param -> param.getMode() == Mode.IN).map(WsParameterDesc::getName))
+    //       .as("params without a mode are 'normal' input params")
+    //       .contains("ipSprcd");
 
-  //     assertThat(firstOp.getName()).isEqualTo("getLanguage");
-  //     assertThat(firstOp.getParameters()).isNotEmpty();
-  //     assertThat(firstOp.getParameters().stream().filter(param -> param.getMode() == Mode.IN).map(WsParameterDesc::getName))
-  //         .as("params without a mode are 'normal' input params")
-  //         .contains("ipSprcd");
+    //   assertThat(firstOp.getParameters().stream()
+    //       .filter(param -> param.getMode() != null)
+    //       .map(WsParameterDesc::getName))
+    //           .as("params with non 'input' mode are still recognized as such")
+    //           .contains("opERROR", "opMESSAGE", "ttSprcd");
 
-  //     assertThat(firstOp.getParameters().stream()
-  //         .filter(param -> param.getMode() != null)
-  //         .map(WsParameterDesc::getName))
-  //             .as("params with non 'input' mode are still recognized as such")
-  //             .contains("opERROR", "opMESSAGE", "ttSprcd");
-
-  //     assertThat(firstOp.getResultType()).isEqualTo("void");
-  //   }
-  // }
+    //   assertThat(firstOp.getResultType()).isEqualTo("void");
+    // }
+  }
 
   // @Test
   // void generate_listSetter_toString_equals_hashCode() throws Exception {
