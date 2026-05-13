@@ -73,6 +73,7 @@ public class CxfClientGenerator {
       options.nsMappings().forEach((k, v) -> cxfContext.addNamespacePackageMap(k, v));
       cxfGenerator.run(cxfContext);
 
+      // TODO: cover with a test
       // FixCXFSchemaLocation.fixLocalWsdlIfNecessary(tmpClientJar); // Bug fix for CXF-7706
       moveLocalWsdlToService(tmpGenDir, cxfContext);
 

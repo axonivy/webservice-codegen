@@ -670,7 +670,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- Pin transitive versions to match the OSGi runtime -->
       <dependency>
         <groupId>com.fasterxml.woodstox</groupId>
         <artifactId>woodstox-core</artifactId>

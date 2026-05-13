@@ -88,17 +88,7 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
     } catch (Exception ex) {
       getLog().error("Failed to generate CXF client sources", ex);
     }
-    // tmpClientJar -> new JarProjectIntegratorService(tmpClientJar, context.project, targetJar)
-    // .integrate(context.monitor),
-    // new CodegenOpts(context.codegen.nsMappings(), context.codegen.underscoreNames()));
-
-    // var services = CxfModelConverter.toWsConfigModel(cxfContext);
-    // if (services.size() > 1) {
-    // LOGGER.warn("Multiple CXF services in model. We only support one service per WSDL.");
-    // }
-    // if (!services.isEmpty()) {
-    // context.config.setService(services.get(0));
-    // }
+    // TODO: serialize parsed; Service, Ports, URIs.
   }
   
   private Map<String, String> mappings() {
