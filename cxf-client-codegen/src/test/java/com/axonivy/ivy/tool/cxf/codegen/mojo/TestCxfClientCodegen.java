@@ -394,27 +394,31 @@ class TestCxfClientCodegen {
   //   }
   // }
 
-  // /**
-  //  * ISSUE XIVY-13809 Handle underline type-defs in CXF soap client.
-  //  * @throws Exception
-  //  */
-  // @Test
-  // void generateUnderscoreNames() throws Exception {
-  //   boolean underscoreAsChar = true;
-  //   CxfClientGenerator.generate(getClass().getResource("underscored.wsdl").toString(), client -> {
-  //     try (URLClassLoader clientCl = newClientJarClassLoader(client)) {
-  //       Class<?> bookType = clientCl.loadClass("com.cleverbuilder.bookservice.Book");
-  //       assertThat(bookType.getDeclaredMethod("getPRICEDATE"))
-  //           .as("getter for type natively without underscores")
-  //           .isNotNull();
-  //       assertThat(bookType.getDeclaredMethod("getPRICE_DATE"))
-  //           .as("getter for type natively with underscore")
-  //           .isNotNull();
-  //     } catch (Exception ex) {
-  //       throw new RuntimeException("failed to invoke CXF service", ex);
-  //     }
-  //   }, new CodegenOpts(Map.of(), underscoreAsChar));
-  // }
+  /**
+   * ISSUE XIVY-13809 Handle underline type-defs in CXF soap client.
+   * @throws Exception
+   */
+  @Test
+  void generateUnderscoreNames() throws Exception {
+    boolean underscoreAsChar = true;
+    var opts = new CxfClientGenerator.CodegenOpts(Map.of(), underscoreAsChar);
+
+    CxfClientGenerator.generate(getClass().getResource("underscored.wsdl").toString(), tmpDir, opts);
+    var bookImpl = Files.readString(tmpDir.resolve("com/cleverbuilder/bookservice/Book.java"));
+    assertThat(bookImpl)
+      .as("getter for type natively without underscores")
+      .containsIgnoringWhitespaces("""
+        public String getPRICEDATE() {
+          return pricedate;
+        }""");
+
+    assertThat(bookImpl)
+      .as("getter for type natively with underscore")
+      .containsIgnoringWhitespaces("""
+        public String getPRICE_DATE() {
+          return price_DATE;
+        }""");
+  }
 
   private Path createLocalWsdl() throws IOException, FileNotFoundException {
     var localWsdl = tmpDir.resolve("IvyEchoService.WSDL");
