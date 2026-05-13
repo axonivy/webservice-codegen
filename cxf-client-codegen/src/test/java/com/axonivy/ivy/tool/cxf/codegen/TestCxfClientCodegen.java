@@ -1,4 +1,4 @@
-package com.axonivy.ivy.tool.cxf.codegen.mojo;
+package com.axonivy.ivy.tool.cxf.codegen;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,9 +14,7 @@ import org.apache.cxf.tools.common.ToolContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import com.axonivy.ivy.tool.cxf.codegen.CxfClientGenerator;
-
-class TestCxfClientCodegen {
+public class TestCxfClientCodegen {
 
   @TempDir
   Path tmpDir;

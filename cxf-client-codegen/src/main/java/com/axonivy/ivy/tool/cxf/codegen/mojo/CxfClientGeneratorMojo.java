@@ -1,12 +1,7 @@
 package com.axonivy.ivy.tool.cxf.codegen.mojo;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.cxf.tools.common.ToolContext;
 import org.apache.maven.plugin.AbstractMojo;
@@ -26,9 +21,9 @@ import com.axonivy.ivy.tool.cxf.codegen.CxfClientGenerator.CodegenOpts;
  * </p>
  * <code>
  * mvn com.axonivy.ivy.tool.soap:cxf-client-codegen:generate-cxf-client
- * -Divy.generate.cxf.client.spec=https://petstore3.swagger.io/api/v3/openapi.json
- * -Divy.generate.cxf.client.output=src_generated/soap/petstore
- * -Divy.generate.cxf.client.package=com.swagger.petstore.client
+ * -Divy.generate.webservice.client.spec=https://petstore3.swagger.io/api/v3/openapi.json
+ * -Divy.generate.webservice.client.output=src_generated/soap/petstore
+ * -Divy.generate.webservice.client.package=com.swagger.petstore.client
  * </code>
  *
  * @since 1.0.0
@@ -43,6 +38,9 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
   /** URI or Path to a WSDL file */
   @Parameter(property = "ivy.generate.webservice.client.wsdl", required = true)
   String wsdl;
+  
+  @Parameter(property = "ivy.generate.webservice.client.output", required = true)
+  Path outputDir;
 
   // TODO: doc
   @Parameter(property = "ivy.generate.webservice.client.nsMappings")
@@ -51,6 +49,11 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
   // TODO: doc
   @Parameter(property = "ivy.generate.webservice.client.underscoreNames", defaultValue = "false")
   Boolean underscoreNames;
+
+  //TODO: enable insecure SSL
+  @Parameter(property = "ivy.generate.webservice.client.insecureSSL", defaultValue = "false")
+  Boolean insecureSSL;
+
 
   @Override
   public void execute() throws MojoExecutionException {
@@ -63,10 +66,9 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
     //     var targetJar = FilePath.of(IvyConstants.DIRECTORY_LIB_WS_CLIENT).append(getClientJarName(context.config.getId()));
     ToolContext cxfContext;
     try {
-      cxfContext = CxfClientGenerator.generate(wsdl, 
-          clientJar -> getLog().info("Generated CXF client jar: " + clientJar),
+      cxfContext = CxfClientGenerator.generate(wsdl, outputDir,
           new CodegenOpts(nsMappings, underscoreNames));
-          System.out.println("Generated CXF client context: " + cxfContext);
+      getLog().info("Generated CXF client context: " + cxfContext);
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
