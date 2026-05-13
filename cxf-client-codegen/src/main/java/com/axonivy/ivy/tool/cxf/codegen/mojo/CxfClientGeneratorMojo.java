@@ -23,9 +23,8 @@ import com.axonivy.ivy.tool.cxf.codegen.CxfClientGenerator.CodegenOpts;
  * </p>
  * <code>
  * mvn com.axonivy.ivy.tool.soap:cxf-client-codegen:generate-cxf-client
- * -Divy.generate.webservice.client.spec=https://petstore3.swagger.io/api/v3/openapi.json
+ * -Divy.generate.webservice.client.wsdl=https://petstore3.swagger.io/api/v3/openapi.json
  * -Divy.generate.webservice.client.output=src_generated/soap/petstore
- * -Divy.generate.webservice.client.package=com.swagger.petstore.client
  * </code>
  *
  * @since 1.0.0
@@ -57,7 +56,7 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
   /**
    * If the WSDL service definitions contains similar attributes only differing by
    * their ‘underscore’ name, one of the attributes is gone in the generated CXF
-   * client. 
+   * client.
    * Enable this property to enforce the manifestation of the underscore in the generated client.
    * <pre>
    * &lt;xsd:element name="PRICEDATE" type="tns:char1"/&gt;
@@ -86,11 +85,11 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
           new CodegenOpts(mappings(), underscoreNames));
       getLog().info("Generated CXF client context: " + cxfContext);
     } catch (Exception ex) {
-      getLog().error("Failed to generate CXF client sources", ex);
+      throw new MojoExecutionException("Failed to generate CXF client sources", ex);
     }
     // TODO: serialize parsed; Service, Ports, URIs.
   }
-  
+
   private Map<String, String> mappings() {
     if (nsMappings == null) {
       return Map.of();

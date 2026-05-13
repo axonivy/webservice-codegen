@@ -40,7 +40,7 @@ public class CxfClientGenerator {
   private static final Logger LOGGER = LoggerFactory.getLogger(CxfClientGenerator.class);
 
   public record CodegenOpts(Map<String, String> nsMappings, boolean underscoreNames) {
-    public static CodegenOpts DEFAULT = new CodegenOpts(Map.of(), false);
+    public static final CodegenOpts DEFAULT = new CodegenOpts(Map.of(), false);
   }
 
   public static ToolContext generate(String wsdlUri, Path tmpGenDir, CodegenOpts options) throws Exception {
