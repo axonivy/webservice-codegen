@@ -38,7 +38,7 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
   /** URI or Path to a WSDL file */
   @Parameter(property = "ivy.generate.webservice.client.wsdl", required = true)
   String wsdl;
-  
+
   @Parameter(property = "ivy.generate.webservice.client.output", required = true)
   Path outputDir;
 
@@ -46,14 +46,22 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
   @Parameter(property = "ivy.generate.webservice.client.nsMappings")
   Map<String, String> nsMappings;
 
-  // TODO: doc
+  /**
+   * If the WSDL service definitions contains similar attributes only differing by
+   * their ‘underscore’ name, one of the attributes is gone in the generated CXF
+   * client. 
+   * Enable this property to enforce the manifestation of the underscore in the generated client.
+   * <pre>
+   * &lt;xsd:element name="PRICEDATE" type="tns:char1"/&gt;
+   * &lt;xsd:element name="PRICE_DATE" type="tns:date10"/&gt;
+   * </pre>
+   */
   @Parameter(property = "ivy.generate.webservice.client.underscoreNames", defaultValue = "false")
   Boolean underscoreNames;
 
-  //TODO: enable insecure SSL
+  // TODO: enable insecure SSL
   @Parameter(property = "ivy.generate.webservice.client.insecureSSL", defaultValue = "false")
   Boolean insecureSSL;
-
 
   @Override
   public void execute() throws MojoExecutionException {
@@ -71,17 +79,17 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
     } catch (Exception ex) {
       getLog().error("Failed to generate CXF client sources", ex);
     }
-//         tmpClientJar -> new JarProjectIntegratorService(tmpClientJar, context.project, targetJar)
-//             .integrate(context.monitor),
-//         new CodegenOpts(context.codegen.nsMappings(), context.codegen.underscoreNames()));
+    // tmpClientJar -> new JarProjectIntegratorService(tmpClientJar, context.project, targetJar)
+    // .integrate(context.monitor),
+    // new CodegenOpts(context.codegen.nsMappings(), context.codegen.underscoreNames()));
 
-//     var services = CxfModelConverter.toWsConfigModel(cxfContext);
-//     if (services.size() > 1) {
-//       LOGGER.warn("Multiple CXF services in model. We only support one service per WSDL.");
-//     }
-//     if (!services.isEmpty()) {
-//       context.config.setService(services.get(0));
-//     }
+    // var services = CxfModelConverter.toWsConfigModel(cxfContext);
+    // if (services.size() > 1) {
+    // LOGGER.warn("Multiple CXF services in model. We only support one service per WSDL.");
+    // }
+    // if (!services.isEmpty()) {
+    // context.config.setService(services.get(0));
+    // }
   }
 
 }
