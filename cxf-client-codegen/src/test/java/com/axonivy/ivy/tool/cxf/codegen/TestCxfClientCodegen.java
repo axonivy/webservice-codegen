@@ -1,6 +1,8 @@
 package com.axonivy.ivy.tool.cxf.codegen;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -9,15 +11,64 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 import org.apache.cxf.tools.common.ToolContext;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockserver.integration.ClientAndServer;
 
 public class TestCxfClientCodegen {
 
   @TempDir
   Path tmpDir;
+
+  private static String mockBaseUrl;
+  private static ClientAndServer mock;
+
+  @BeforeAll
+  static void startHttp() {
+    Integer[] ports = IntStream.rangeClosed(3333, 3333 + 20).boxed().toArray(Integer[]::new);
+    mock = new ClientAndServer(ports);
+    mockBaseUrl = "http://localhost:" + mock.getPort();
+    mockResources(mock);
+  }
+
+  @AfterAll
+  static void stopHttp() {
+    mock.stop();
+  }
+
+  static void mockResources(ClientAndServer mock) {
+    mock.when(request())
+        .respond(httpRequest -> {
+          var resourcePath = httpRequest.getPath().getValue().replaceFirst("^/wsdl/", "");
+          try (var is = TestCxfClientCodegen.class.getResourceAsStream(resourcePath)) {
+            if (is == null) {
+              return response().withStatusCode(404);
+            }
+            return response().withStatusCode(200).withBody(is.readAllBytes());
+          }
+        });
+  }
+
+  @Test
+  void generateEchoServiceFromWebResource() throws Exception {
+    var meta = CxfClientGenerator.generate(
+        mockBaseUrl+"/wsdl/IvyEchoService.WSDL", tmpDir,
+        CxfClientGenerator.CodegenOpts.DEFAULT);
+
+    assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("IvyEchoService");
+
+    var servicePath = tmpDir.resolve("ch/ivyteam/test/ws");
+    assertThat(servicePath.resolve("IvyEchoService.java")).exists();
+    assertThat(servicePath.resolve("IvyEchoServicePortType.java")).exists();
+    assertThat(servicePath.resolve("IvyEchoService.wsdl"))
+        .as("contains service descriptor as offline resources")
+        .exists();
+  }
 
   // @Test
   // void generateEchoServiceOnline_https() throws Exception {
@@ -50,7 +101,7 @@ public class TestCxfClientCodegen {
     mapping.put("urn:ws.test.ivyteam.ch", packageName);
     mapping.put("urn:schema.ws.test.ivyteam.ch", "ch.ivyteam.testmapping.schema");
     ToolContext meta = CxfClientGenerator.generate(
-      "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService?wsdl", tmpDir,
+      mockBaseUrl+"/wsdl/IvyEchoService.WSDL", tmpDir,
         new CxfClientGenerator.CodegenOpts(mapping, false));
 
 
@@ -284,7 +335,7 @@ public class TestCxfClientCodegen {
       var wsdl = new String(is.readAllBytes(), StandardCharsets.UTF_8);
       wsdl = wsdl.replace(
           "<xs:include schemaLocation=\"GeresResidentInfo.xsd\" />",
-          "<xs:include schemaLocation=\"http://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd\" />");
+          "<xs:include schemaLocation=\"" + mockBaseUrl + "/wsdl/geres/GeresResidentInfo.xsd\" />");
       Files.writeString(httpsWsdl, wsdl);
     }
     return httpsWsdl;

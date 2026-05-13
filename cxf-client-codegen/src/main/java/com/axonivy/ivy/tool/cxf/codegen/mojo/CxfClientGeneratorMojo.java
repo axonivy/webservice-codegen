@@ -60,18 +60,16 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
     if (skipGenerate) {
       return;
     }
-    getLog().info("Generating CXF client sources...");
 
+    getLog().info("Generating CXF client sources for WSDL: " + wsdl);
 
-    //     var targetJar = FilePath.of(IvyConstants.DIRECTORY_LIB_WS_CLIENT).append(getClientJarName(context.config.getId()));
     ToolContext cxfContext;
     try {
       cxfContext = CxfClientGenerator.generate(wsdl, outputDir,
           new CodegenOpts(nsMappings, underscoreNames));
       getLog().info("Generated CXF client context: " + cxfContext);
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (Exception ex) {
+      getLog().error("Failed to generate CXF client sources", ex);
     }
 //         tmpClientJar -> new JarProjectIntegratorService(tmpClientJar, context.project, targetJar)
 //             .integrate(context.monitor),
