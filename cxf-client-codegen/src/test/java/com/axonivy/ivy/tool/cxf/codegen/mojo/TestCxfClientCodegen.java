@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ class TestCxfClientCodegen {
   Path tmpDir;
 
   @Test
-  void generateEchoServiceOnline(@TempDir Path tmpDir) throws Exception {
+  void generateEchoServiceOnline() throws Exception {
     var meta = CxfClientGenerator.generate(
         "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService?wsdl", tmpDir, 
         CxfClientGenerator.CodegenOpts.DEFAULT);
@@ -111,7 +112,7 @@ class TestCxfClientCodegen {
    * @throws Exception
    */
   @Test
-  void generatePortalConnector(@TempDir Path tmpDir) throws Exception {
+  void generatePortalConnector() throws Exception {
     CxfClientGenerator.generate(
           this.getClass().getResource("portalWebStartable.wsdl").toString(), 
           tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
@@ -279,7 +280,7 @@ class TestCxfClientCodegen {
 
   // ISSUE XIVY-3546 CXF WebService Creation with undefined element
   @Test
-  void generateWithUndefinedNames(@TempDir Path tmpDir) throws Exception {
+  void generateWithUndefinedNames() throws Exception {
     var meta = CxfClientGenerator.generate(getClass().getResource("undefinedElement.wsdl").toString(), 
     tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
 
@@ -298,55 +299,53 @@ class TestCxfClientCodegen {
       ) throws WebServiceProcessTechnicalException;""");
   }
 
-  // /**
-  //  * ISSUE XIVY-3117 CXF WebService Creation with included xsd
-  //  * @throws Exception
-  //  *
-  //  *           Fetching the initial WSDL and handling optional redirects to HTTPS is
-  //  *           well supported by our CXF client generator.
-  //  *
-  //  *           However, for fetching internal XSD refs to HTTP, we need additional flags.
-  //  *
-  //  *           e.g. <xs:include schemaLocation="http://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd" />
-  //  *           which redirects to 'https://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd
-  //  *
-  //  *           seeCxfClientGenerator.withRedirectConfigurer
-  //  *
-  //  */
-  // @Test
-  // void generateGeres_httpsRedirect() throws Exception {
-  //   var jarKeeper = new JarKeeper();
+  /**
+   * ISSUE XIVY-3117 CXF WebService Creation with included xsd
+   * @throws Exception
+   *
+   *           Fetching the initial WSDL and handling optional redirects to HTTPS is
+   *           well supported by our CXF client generator.
+   *
+   *           However, for fetching internal XSD refs to HTTP, we need additional flags.
+   *
+   *           e.g. <xs:include schemaLocation="http://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd" />
+   *           which redirects to 'https://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd
+   *
+   *           seeCxfClientGenerator.withRedirectConfigurer
+   *
+   */
+  @Test
+  void generateGeres_httpsRedirect(@TempDir Path tmpXsdSupplier) throws Exception {
+    Path httpsWsdl = httpsXsdRedirect(tmpXsdSupplier);
+    var meta = CxfClientGenerator.generate(httpsWsdl.toString(), 
+    tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
 
-  //   Path httpsWsdl = httpsXsdRedirect();
-  //   ToolContext context = generate(httpsWsdl.toString(), jarKeeper::keep);
+    var services = meta.getJavaModel().getServiceClasses();
+    var service = services.entrySet().iterator().next().getValue();
+    Path generated = tmpDir.resolve(service.getFullClassName().replace(".", "/") + ".java");
+    var serviceImpl = Files.readString(generated);
+    assertThat(serviceImpl)
+        .contains("public ResidentInfoPortType getResidentInfoPort()");
 
-  //   List<WsService> services = CxfModelConverter.toWsConfigModel(context);
-  //   assertThat(services).isNotEmpty();
+    var portType = Files.readString(generated.getParent().resolve("ResidentInfoPortType.java"));
+    assertThat(portType).containsIgnoringWhitespaces("""
+    public ResidentInfoFastResponse residentInfoFast(
+        @WebParam(partName = "parameters", name = "ResidentInfoFast", targetNamespace = "http://geres.bedag.ch/schemas/20180101/GeresResidentInfoService")
+        ResidentInfoFast parameters
+    ) throws InvalidArgumentsFault, PermissionDeniedFault, InfrastructureFault""");
+  }
 
-  //   WsService service = services.iterator().next();
-  //   try (URLClassLoader classloader = craftClassloader(jarKeeper.clientJar)) {
-  //     var collector = new WebServiceOperationsCollector(classloader, service.getServiceClass());
-  //     var operations = collector.getOperations("ResidentInfoPort");
-  //     var firstOp = findOperation(operations, "ResidentInfoFast");
-  //     assertThat(firstOp.getName()).isEqualTo("ResidentInfoFast");
-  //     assertThat(inputParams(firstOp))
-  //         .hasSize(1)
-  //         .allMatch(param -> "parameters".equals(param.getName()));
-  //     assertThat(firstOp.getResultType()).contains("ResidentInfoFastResponse");
-  //   }
-  // }
-
-  // private Path httpsXsdRedirect() throws IOException {
-  //   var httpsWsdl = tmpDir.resolve("residentInfo.wsdl");
-  //   try (var is = TestCxfClientCodegen.class.getResourceAsStream("geres/GeresResidentInfo_v1801.wsdl")) {
-  //     var wsdl = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-  //     wsdl = Strings.CS.replace(wsdl,
-  //         "<xs:include schemaLocation=\"GeresResidentInfo.xsd\" />",
-  //         "<xs:include schemaLocation=\"http://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd\" />");
-  //     Files.writeString(httpsWsdl, wsdl);
-  //   }
-  //   return httpsWsdl;
-  // }
+  private static Path httpsXsdRedirect(Path tmpDir) throws IOException {
+    var httpsWsdl = tmpDir.resolve("residentInfo.wsdl");
+    try (var is = TestCxfClientCodegen.class.getResourceAsStream("geres/GeresResidentInfo_v1801.wsdl")) {
+      var wsdl = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+      wsdl = wsdl.replace(
+          "<xs:include schemaLocation=\"GeresResidentInfo.xsd\" />",
+          "<xs:include schemaLocation=\"http://test-webservices.ivyteam.io/wsdl/geresResidentWsdl/GeresResidentInfo.xsd\" />");
+      Files.writeString(httpsWsdl, wsdl);
+    }
+    return httpsWsdl;
+  }
 
   // // ISSUE XIVY-3193 CXF generated WSDL pointing to local included XSD file.
   // @Test
