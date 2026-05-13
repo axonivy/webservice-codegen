@@ -277,42 +277,26 @@ class TestCxfClientCodegen {
   //   }
   // }
 
-  // // ISSUE XIVY-3546 CXF WebService Creation with undefined element
-  // @Test
-  // void generateWithUndefinedNames() throws Exception {
-  //   var jarKeeper = new JarKeeper();
-  //   ToolContext context = generate(getClass().getResource("undefinedElement.wsdl").toString(), jarKeeper::keep);
+  // ISSUE XIVY-3546 CXF WebService Creation with undefined element
+  @Test
+  void generateWithUndefinedNames(@TempDir Path tmpDir) throws Exception {
+    var meta = CxfClientGenerator.generate(getClass().getResource("undefinedElement.wsdl").toString(), 
+    tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
 
-  //   List<WsService> services = CxfModelConverter.toWsConfigModel(context);
-  //   assertThat(services).isNotEmpty();
+    var services = meta.getJavaModel().getServiceClasses();
+    var service = services.entrySet().iterator().next().getValue();
+    Path generated = tmpDir.resolve(service.getFullClassName().replace(".", "/") + ".java");
+    var serviceImpl = Files.readString(generated);
+    assertThat(serviceImpl)
+      .contains("public PersonService getPersonServicePort()");
 
-  //   WsService service = services.iterator().next();
-  //   try (URLClassLoader classloader = craftClassloader(jarKeeper.clientJar)) {
-  //     var collector = new WebServiceOperationsCollector(classloader, service.getServiceClass());
-
-  //     var operations = collector.getOperations("PersonServicePort");
-  //     var firstOp = findOperation(operations, "addPerson");
-
-  //     assertThat(firstOp.getName()).isEqualTo("addPerson");
-  //     assertThat(inputParams(firstOp))
-  //         .hasSize(1)
-  //         .allMatch(param -> "parameters".equals(param.getName()));
-  //     assertThat(firstOp.getResultType()).contains("AddPersonResponse");
-  //   }
-  // }
-
-  // private IWebServiceOperation findOperation(List<IWebServiceOperation> operations, String name) {
-  //   return operations.stream()
-  //       .filter(operation -> operation.getName().equals(name))
-  //       .findAny()
-  //       .orElseThrow(() -> new RuntimeException("could not find operation " + name));
-  // }
-
-  // private List<WsParameterDesc> inputParams(IWebServiceOperation op) {
-  //   return op.getParameters().stream()
-  //       .filter(p -> p.getMode() == Mode.IN || p.getMode() == Mode.INOUT)
-  //       .collect(Collectors.toList());
-  // }
+    var personService = Files.readString(generated.getParent().resolve("PersonService.java"));
+    assertThat(personService).containsIgnoringWhitespaces("""
+      public AddPersonResponse addPerson(
+          @WebParam(partName = "parameters", name = "addPerson", targetNamespace = "http://service.soap.connectivity.axonivy.com/")
+          AddPerson parameters
+      ) throws WebServiceProcessTechnicalException;""");
+  }
 
   // /**
   //  * ISSUE XIVY-3117 CXF WebService Creation with included xsd
