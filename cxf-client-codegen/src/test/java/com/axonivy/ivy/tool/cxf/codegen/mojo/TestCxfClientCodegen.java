@@ -4,43 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.charset.Charset;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-// import javax.jws.WebParam.Mode;
-
-// import org.apache.commons.lang3.ArrayUtils;
-// import org.apache.commons.lang3.Strings;
-// import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.cxf.tools.common.ToolContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-// import org.osgi.framework.BundleException;
 
 import com.axonivy.ivy.tool.cxf.codegen.CxfClientGenerator;
 
-// import ch.ivyteam.eclipse.util.EclipsePlatformUtils;
-// import ch.ivyteam.ivy.webservice.call.IWebserviceClientCodeGenerator.CodegenOpts;
-// import ch.ivyteam.ivy.webservice.datamodel.IWebServiceOperation;
-// import ch.ivyteam.ivy.webservice.datamodel.WebServiceOperationsCollector;
-// import ch.ivyteam.ivy.webservice.datamodel.WsParameterDesc;
-// import ch.ivyteam.ivy.webservice.exec.cxf.codegen.CxfClientGenerator;
-// import ch.ivyteam.ivy.webservice.exec.cxf.codegen.CxfModelConverter;
-// import ch.ivyteam.ivy.webservice.webserviceconfig.generated.WsPort;
-// import ch.ivyteam.ivy.webservice.webserviceconfig.generated.WsService;
-// import ch.ivyteam.util.net.SSLUtil;
-
-@SuppressWarnings("restriction")
 class TestCxfClientCodegen {
 
   @TempDir
@@ -207,50 +182,36 @@ class TestCxfClientCodegen {
     // }
   }
 
-  // @Test
-  // void generate_listSetter_toString_equals_hashCode() throws Exception {
-  //   generate(this.getClass().getResource("listAndBoolean.wsdl").toString(), client -> {
-  //     try (URLClassLoader clientCl = newClientJarClassLoader(client)) {
-  //       Class<?> requestClass = clientCl.loadClass("wsbindin.Call");
-  //       assertThat(requestClass).hasDeclaredMethods(
-  //           "getNames", "setNames",
-  //           "isMale", "setMale",
-  //           "toString", "equals", "hashCode");
+  @Test
+  void generate_listSetter_toString_equals_hashCode(@TempDir Path tmpDir) throws Exception {
+    CxfClientGenerator.generate(
+    this.getClass().getResource("listAndBoolean.wsdl").toString(),
+    tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
+    assertThat(tmpDir).isNotEmptyDirectory();
 
-  //       Method getterMethod = getMethod(requestClass, "getNames");
-  //       assertThat(getterMethod.getReturnType()).isEqualTo(List.class);
+    var impl = Files.readString(tmpDir.resolve("wsbindin").resolve("Call.java"));
+    assertThat(impl)
+      .as("list getters and setters")
+      .contains(
+        "public List<String> getNames()"
+    //  , "public void setNames(List<String> names)"
+    );
 
-  //       Method setterMethod = getMethod(requestClass, "setNames");
-  //       assertThat(setterMethod.getParameterTypes()).containsOnly(List.class);
+    assertThat(impl)
+        .as("wrapper types getters and setters")
+        .contains(
+          "public Boolean isMale()", 
+          "public void setMale(Boolean value)"
+        );
+    // TODO: support again!
+    // assertThat(impl)
+    //     .as("implements common object identifiers")
+    //     .contains(
+    //       "public String toString()", 
+    //       "public boolean equals(Object obj)", 
+    //       "publich int hashCode()");
+  }
 
-  //       Class<?> responseClass = clientCl.loadClass("wsbindin.CallResponse");
-  //       assertThat(responseClass).hasDeclaredMethods(
-  //           "toString", "equals", "hashCode");
-
-  //     } catch (Exception ex) {
-  //       throw new RuntimeException(ex);
-  //     }
-  //   });
-  // }
-
-  // private Method getMethod(Class<?> requestClass, String methodName) {
-  //   return Arrays.stream(requestClass.getDeclaredMethods())
-  //       .filter(method -> methodName.equals(method.getName()))
-  //       .findAny().orElse(null);
-  // }
-
-  // private static URLClassLoader newClientJarClassLoader(Path client)
-  //     throws BundleException, IOException, MalformedURLException {
-  //   URL[] scriptingCp = EclipsePlatformUtils.getClassPath(EclipsePlatformUtils.getBundle(ch.ivyteam.ivy.scripting.objects.DateTime.class));
-  //   URL[] cleanCp = Arrays.stream(scriptingCp)
-  //       .filter(url -> new File(url.getFile()).exists()) // test setup related: OSGI.jar uri does not exists and must therefore be filtered.
-  //       .toArray(URL[]::new);
-  //   return new URLClassLoader(ArrayUtils.add(cleanCp, client.toUri().toURL()), WSDLToJava.class.getClassLoader());
-  // }
-
-  // private static String getParamType(Class<?> nativeParams, String fieldName) throws NoSuchFieldException {
-  //   return nativeParams.getDeclaredField(fieldName).getType().getName();
-  // }
 
   // @Test
   // void generateWithComplexTypes() throws Exception {
@@ -487,37 +448,6 @@ class TestCxfClientCodegen {
       is.transferTo(out);
     }
     return localWsdl;
-  }
-
-  private static String getFileContentFromJarFile(Path jarFile, String fileName) {
-    var uri = URI.create("jar:" + jarFile.toUri());
-    try (FileSystem zipFs = FileSystems.newFileSystem(uri, Map.of())) {
-      var file = Files.walk(zipFs.getPath("/")).filter(path -> path.endsWith(fileName)).findFirst().get();
-      return new String(Files.readAllBytes(file), Charset.forName("UTF-8"));
-    } catch (IOException ex) {
-      throw new RuntimeException(ex);
-    }
-  }
-
-  private class JarKeeper {
-    private final Path clientJar = tmpDir.resolve("client.jar");
-
-    public void keep(Path tmpClientJar) {
-      try {
-        Files.copy(tmpClientJar, clientJar);
-      } catch (IOException ex) {
-        throw new RuntimeException(ex);
-      }
-    }
-  }
-
-  private static final URLClassLoader craftClassloader(Path clientJar) {
-    try {
-      var urlClasspathEntries = List.of(clientJar.toUri().toURL());
-      return new URLClassLoader(urlClasspathEntries.toArray(URL[]::new), TestCxfClientCodegen.class.getClassLoader());
-    } catch (Throwable ex) {
-      throw new RuntimeException("Failed to resolve classpath", ex);
-    }
   }
 
   public static ToolContext generate(String wsdlUri, Consumer<Path> clientJarUser) throws Exception {
