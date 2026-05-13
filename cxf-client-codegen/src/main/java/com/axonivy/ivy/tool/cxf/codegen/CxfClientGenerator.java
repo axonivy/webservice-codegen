@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -91,7 +90,7 @@ public class CxfClientGenerator {
         .map(JavaServiceClass::getPackageName)
         .collect(Collectors.toList());
     if (serviceNs.size() != 1) {
-      // keep wsdl in root of jar
+      // keep wsdl in root: we don't know which service package to move it to
       return;
     }
 
