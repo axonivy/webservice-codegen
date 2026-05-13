@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import org.apache.maven.api.plugin.testing.InjectMojo;
@@ -44,21 +45,21 @@ class TestCxfClientGeneratorMojo {
         .exists();
   }
 
-  // @Test
-  // void regenerate_cleanup(@TempDir Path out) throws Exception {
-  //   mojo.wsdl = TestCxfClientCodegen.class.getResource("IvyEchoService.WSDL").toURI().toString();
-  //   mojo.namespace = "com.swagger.petstore";
-  //   mojo.outputDir = out;
+  @Test
+  void regenerate_cleanup(@TempDir Path out) throws Exception {
+    mojo.wsdl = TestCxfClientCodegen.class.getResource("IvyEchoService.WSDL").toURI().toString();
+    mojo.nsMappings = List.of("urn:ws.test.ivyteam.ch=com.acme.ivy.echo");
+    mojo.outputDir = out;
 
-  //   var legacy = out.resolve("legacy").resolve("MyClient.java");
-  //   Files.createDirectories(legacy.getParent());
-  //   Files.writeString(legacy, "package legacy;", StandardOpenOption.CREATE_NEW);
+    var legacy = out.resolve("com/acme/ivy/echo").resolve("MyClient.java");
+    Files.createDirectories(legacy.getParent());
+    Files.writeString(legacy, "package legacy;", StandardOpenOption.CREATE_NEW);
 
-  //   mojo.execute();
+    mojo.execute();
 
-  //   assertThat(legacy)
-  //       .as("existing client is removed before re-generation")
-  //       .doesNotExist();
-  // }
+    assertThat(legacy)
+        .as("existing client is removed before re-generation")
+        .doesNotExist();
+  }
 
 }

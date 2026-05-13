@@ -77,6 +77,7 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
       return;
     }
 
+    new CxfClientGeneratorFiles(outputDir).cleanup(getLog()::info);
     getLog().info("Generating CXF client sources for WSDL: " + wsdl);
 
     ToolContext cxfContext;
