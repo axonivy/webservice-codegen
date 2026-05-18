@@ -1,6 +1,7 @@
 package com.axonivy.ivy.tool.cxf.codegen;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -55,8 +56,8 @@ public class TestCxfClientCodegen {
 
   @Test
   void generateEchoServiceFromWebResource() throws Exception {
-    var meta = CxfClientGenerator.generate(
-        mockBaseUrl + "/wsdl/IvyEchoService.WSDL", tmpDir,
+    var meta = new CxfClientGenerator(tmpDir).generate(
+        mockBaseUrl + "/wsdl/IvyEchoService.WSDL",
         CxfClientGenerator.CodegenOpts.DEFAULT);
 
     assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("IvyEchoService");
@@ -69,29 +70,25 @@ public class TestCxfClientCodegen {
         .exists();
   }
 
-  // @Test
-  // void generateEchoServiceOnline_https() throws Exception {
-  // var fileRef = new AtomicReference<>(Path.of(""));
-  // boolean insecure = SSLUtil.isInsecureSSLenabled();
-  // assertThat(insecure).isFalse();
-  // try {
-  // SSLUtil.enableInsecureSSL(true);
-  // ToolContext meta = generate("https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService?wsdl",
-  // client -> {
-  // assertThat(client).exists();
-  // List<Path> entries = getJarContents(client);
-  // Path servicePath = entries.get(0).resolve("ch/ivyteam/test/ws/");
-  // assertThat(entries).as("contains service descriptor as offline resources").contains(servicePath.resolve("IvyEchoService.wsdl"));
-  // assertThat(entries).as("contains service binary").contains(servicePath.resolve("IvyEchoService.class"));
-  // assertThat(entries).as("contains service source").contains(servicePath.resolve("IvyEchoService.java"));
-  // fileRef.set(client);
-  // });
-  // assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("IvyEchoService");
-  // assertThat(fileRef.get()).as("client jar is cleaned up after consumption").doesNotExist();
-  // } finally {
-  // SSLUtil.enableInsecureSSL(insecure);
-  // }
-  // }
+  @Test
+  void generate_https() throws Exception {
+    String httpsWsdl = "https://localhost:" + mock.getPort() + "/wsdl/IvyEchoService.WSDL";
+    var meta = new CxfClientGenerator(tmpDir)
+      .insecureSsl(true)
+      .generate(httpsWsdl, CxfClientGenerator.CodegenOpts.DEFAULT);
+    assertThat(meta.getJavaModel().getServiceClasses())
+      .as("opt-in insecure SSL context allows fetching from HTTPS endpoints with self-signed certificates")
+      .containsOnlyKeys("IvyEchoService");
+  }
+
+  @Test
+  void generate_https_rejectInsecureByDefault() throws Exception {
+    String httpsWsdl = "https://localhost:" + mock.getPort() + "/wsdl/IvyEchoService.WSDL";
+    assertThatThrownBy(() -> new CxfClientGenerator(tmpDir).generate(
+        httpsWsdl, CxfClientGenerator.CodegenOpts.DEFAULT))
+        .as("WSDL and XSD resources are by default only fetched from verified HTTPS endpoints")
+        .isInstanceOf(Exception.class);
+  }
 
   @Test
   void generateWithPackageMapping() throws Exception {
@@ -99,8 +96,8 @@ public class TestCxfClientCodegen {
     String packageName = "ch.ivyteam.testmapping.service";
     mapping.put("urn:ws.test.ivyteam.ch", packageName);
     mapping.put("urn:schema.ws.test.ivyteam.ch", "ch.ivyteam.testmapping.schema");
-    ToolContext meta = CxfClientGenerator.generate(
-        mockBaseUrl + "/wsdl/IvyEchoService.WSDL", tmpDir,
+    ToolContext meta = new CxfClientGenerator(tmpDir).generate(
+        mockBaseUrl + "/wsdl/IvyEchoService.WSDL",
         new CxfClientGenerator.CodegenOpts(mapping, false));
 
     String pathPrefix = (packageName + "/").replace('.', '/');
@@ -213,9 +210,9 @@ public class TestCxfClientCodegen {
     Map<String, String> mapping = new HashMap<>();
     mapping.put("http://schemas.microsoft.com/2003/10/Serialization/Arrays", packageName);
 
-    var meta = CxfClientGenerator.generate(
+    var meta = new CxfClientGenerator(tmpDir).generate(
         this.getClass().getResource("infoshare/InfoShare.wsdl").toString(),
-        tmpDir, new CxfClientGenerator.CodegenOpts(mapping, false));
+        new CxfClientGenerator.CodegenOpts(mapping, false));
 
     assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("InfoShare");
 
@@ -307,8 +304,8 @@ public class TestCxfClientCodegen {
   @Test
   void generateGeres_httpsRedirect(@TempDir Path tmpXsdSupplier) throws Exception {
     Path httpsWsdl = httpsXsdRedirect(tmpXsdSupplier);
-    var meta = CxfClientGenerator.generate(httpsWsdl.toString(),
-        tmpDir, CxfClientGenerator.CodegenOpts.DEFAULT);
+    var meta = new CxfClientGenerator(tmpDir).generate(httpsWsdl.toString(),
+        CxfClientGenerator.CodegenOpts.DEFAULT);
 
     var services = meta.getJavaModel().getServiceClasses();
     var service = services.entrySet().iterator().next().getValue();
@@ -377,7 +374,7 @@ public class TestCxfClientCodegen {
     boolean underscoreAsChar = true;
     var opts = new CxfClientGenerator.CodegenOpts(Map.of(), underscoreAsChar);
 
-    CxfClientGenerator.generate(getClass().getResource("underscored.wsdl").toString(), tmpDir, opts);
+    new CxfClientGenerator(tmpDir).generate(getClass().getResource("underscored.wsdl").toString(), opts);
     var bookImpl = Files.readString(tmpDir.resolve("com/cleverbuilder/bookservice/Book.java"));
     assertThat(bookImpl)
         .as("getter for type natively without underscores")
@@ -412,9 +409,8 @@ public class TestCxfClientCodegen {
   }
 
   public static ToolContext generateResource(String resourceName, Path tmpDir) throws Exception {
-    return CxfClientGenerator.generate(
+    return new CxfClientGenerator(tmpDir).generate(
         TestCxfClientCodegen.class.getResource(resourceName).toString(),
-        tmpDir,
         CxfClientGenerator.CodegenOpts.DEFAULT);
   }
 
