@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.axonivy.ivy.tool.cxf.codegen.binding.IvyGeneratorBindings;
 import com.axonivy.ivy.tool.cxf.codegen.binding.JAXWSBindingSerializer;
 import com.axonivy.ivy.tool.cxf.codegen.fix.FixCXFSchemaLocation;
+import com.axonivy.ivy.tool.cxf.codegen.model.ServiceModelWriter;
 import com.axonivy.ivy.tool.cxf.codegen.ssl.InsecureSSL;
 
 /**
@@ -90,6 +91,7 @@ public class CxfClientGenerator {
       FixCXFSchemaLocation.fixLocalWsdlIfNecessary(tmpGenDir); // Bug fix for CXF-7706
       moveLocalWsdlToService(tmpGenDir, cxfContext);
 
+      new ServiceModelWriter().write(cxfContext.getJavaModel(), tmpGenDir);
       return cxfContext;
     };
 

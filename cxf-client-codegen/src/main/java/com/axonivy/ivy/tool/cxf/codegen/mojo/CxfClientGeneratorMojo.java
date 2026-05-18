@@ -82,16 +82,14 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
     new CxfClientGeneratorFiles(outputDir).cleanup(getLog()::info);
     getLog().info("Generating CXF client sources for WSDL: " + wsdl);
 
-    ToolContext cxfContext;
     try {
-      cxfContext = new CxfClientGenerator(outputDir)
+      var cxfContext = new CxfClientGenerator(outputDir)
         .insecureSsl(Boolean.TRUE.equals(insecureSSL))
         .generate(wsdl, new CodegenOpts(mappings(), underscoreNames));
-      getLog().info("Generated CXF client context: " + cxfContext);
+      getLog().info("Generated CXF client for service: " + cxfContext.getJavaModel().getServiceClasses().keySet());
     } catch (Exception ex) {
       throw new MojoExecutionException("Failed to generate CXF client sources", ex);
     }
-    // TODO: serialize parsed; Service, Ports, URIs.
   }
 
   private Map<String, String> mappings() {
