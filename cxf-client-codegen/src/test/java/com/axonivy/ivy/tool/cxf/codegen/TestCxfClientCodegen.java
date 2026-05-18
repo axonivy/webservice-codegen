@@ -394,6 +394,23 @@ public class TestCxfClientCodegen {
           }""");
   }
 
+  // ISSUE XIVY-2477 WSDL Fix for ClientJars that contain an empty schemaLocation on the import(like:schemaLocation="")
+  // ISSUE https://issues.apache.org/jira/browse/CXF-7706
+  @Test
+  void generate_absentImportSchemaLocation() throws Exception {
+    generateResource("fileDownload.wsdl", tmpDir);
+    Path servicePath = tmpDir.resolve("org/example/filedownload");
+    Path wsdlPath = servicePath.resolve("fileDownload.wsdl");
+    assertThat(wsdlPath)
+        .as("contains offline WSDL")
+        .exists();
+    String wsdlContent = Files.readString(wsdlPath);
+    assertThat(wsdlContent)
+        .as("no empty schemaLocations are being injected by CXF codegen")
+        .doesNotContain("schemaLocation=\"\"")
+        .contains("<xs:import namespace=\"http://www.w3.org/2005/05/xmlmime\"/>");
+  }
+
   public static ToolContext generateResource(String resourceName, Path tmpDir) throws Exception {
     return CxfClientGenerator.generate(
         TestCxfClientCodegen.class.getResource(resourceName).toString(),

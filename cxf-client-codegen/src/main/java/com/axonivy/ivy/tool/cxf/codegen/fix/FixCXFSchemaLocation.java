@@ -45,32 +45,33 @@ public class FixCXFSchemaLocation {
 
   /**
    * ISSUE CXF-7706 (https://issues.apache.org/jira/browse/CXF-7706)
-   *
-   * <p>Fixes another issue with the CXF clientjar:<ol>
-   * <li>Searches for WSDLs in the CXF client jar.</li>
-   * <li>If the WSDL contains an import where the schema location is an empty string it removes the schema location attribute.
-   * (e.g. &lt;import namespace="http://schemas.xmlsoap.org/soap/encoding/" schemaLocation=""/ &gt;)</li>
-   * <li>Writes the modified WSDL back to the ZIP (only writes the file back to the ZIP if a modification was performed)</li>
+   * <ol>
+   * <li>Searches for the service definition WSDL in the generated client
+   * directory.</li>
+   * <li>If the WSDL contains an import where the schema location is an empty
+   * string it removes the schema location attribute.
+   * (e.g. &lt;import namespace="http://schemas.xmlsoap.org/soap/encoding/"
+   * schemaLocation=""/ &gt;)</li>
+   * <li>Writes the modified WSDL (only if a modification was performed)</li>
    * </ol>
-   * @param tmpClientJar
+   * 
+   * @param tmpGenDir
    * @throws IOException
    */
-  public static void fixLocalWsdlIfNecessary(Path tmpClientJar) throws IOException {
-    URI uri = URI.create("jar:" + tmpClientJar.toUri());
-    try (FileSystem zipFs = FileSystems.newFileSystem(uri, new HashMap<>());
-        Stream<Path> walker = Files.walk(zipFs.getPath("/"), 1)) {
+  public static void fixLocalWsdlIfNecessary(Path tmpGenDir) throws IOException {
+    try (Stream<Path> walker = Files.walk(tmpGenDir, 1)) {
       walker.filter(FixCXFSchemaLocation::isSchemaFile)
-          .forEach(schemaPath -> {
-            try {
-              Document doc = readWsdl(schemaPath);
-              boolean hasModifiedWsdl = modifyEmptySchemaLocation(doc);
-              if (hasModifiedWsdl) {
-                writeWsdl(schemaPath, doc);
-              }
-            } catch (Exception ex) {
-              LOGGER.warn("Failed to modify schemaLocation in service definition files", ex);
+        .forEach(schemaPath -> {
+          try {
+            Document doc = readWsdl(schemaPath);
+            boolean hasModifiedWsdl = modifyEmptySchemaLocation(doc);
+            if (hasModifiedWsdl) {
+              writeWsdl(schemaPath, doc);
             }
-          });
+          } catch (Exception ex) {
+            LOGGER.warn("Failed to modify schemaLocation in service definition files", ex);
+          }
+        });
     }
   }
 
@@ -102,7 +103,7 @@ public class FixCXFSchemaLocation {
     for (int i = 0; i < nodeList.getLength(); i++) {
       Node importNode = nodeList.item(i);
       Node schemaLocation = importNode.getAttributes().getNamedItem("schemaLocation");
-      if (schemaLocation != null && schemaLocation.getNodeValue() != null && !schemaLocation.getNodeValue().isBlank()) {
+      if (schemaLocation != null && schemaLocation.getNodeValue() != null && schemaLocation.getNodeValue().isBlank()) {
         Element importElement = ((Attr) schemaLocation).getOwnerElement();
         importElement.removeAttribute("schemaLocation");
 

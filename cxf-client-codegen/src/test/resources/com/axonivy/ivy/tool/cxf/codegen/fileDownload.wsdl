@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://filedownload.example.org/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" name="FileDownloadServiceService" targetNamespace="http://filedownload.example.org/">
+  <wsdl:types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:tns="http://filedownload.example.org/" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://filedownload.example.org/">
+  <xs:import namespace="http://www.w3.org/2005/05/xmlmime"/>
+  <xs:element name="getFileAsDataHandler" type="tns:getFileAsDataHandler"/>
+  <xs:element name="getFileAsDataHandlerResponse" type="tns:getFileAsDataHandlerResponse"/>
+  <xs:complexType name="getFileAsDataHandler">
+    <xs:sequence/>
+  </xs:complexType>
+  <xs:complexType name="getFileAsDataHandlerResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="xs:base64Binary" xmime:expectedContentTypes="application/octet-stream"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="IOException" type="tns:IOException"/>
+  <xs:complexType name="IOException">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="message" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="getFileAsDataHandler">
+    <wsdl:part element="tns:getFileAsDataHandler" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getFileAsDataHandlerResponse">
+    <wsdl:part element="tns:getFileAsDataHandlerResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="IOException">
+    <wsdl:part element="tns:IOException" name="IOException">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="FileDownloadService">
+    <wsdl:operation name="getFileAsDataHandler">
+      <wsdl:input message="tns:getFileAsDataHandler" name="getFileAsDataHandler">
+    </wsdl:input>
+      <wsdl:output message="tns:getFileAsDataHandlerResponse" name="getFileAsDataHandlerResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:IOException" name="IOException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="FileDownloadServiceServiceSoapBinding" type="tns:FileDownloadService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getFileAsDataHandler">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getFileAsDataHandler">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getFileAsDataHandlerResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="IOException">
+        <soap:fault name="IOException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="FileDownloadServiceService">
+    <wsdl:port binding="tns:FileDownloadServiceServiceSoapBinding" name="FileDownloadServicePort">
+      <soap:address location="http://example.org:8080/test-service/webservices/fileDownloadService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
