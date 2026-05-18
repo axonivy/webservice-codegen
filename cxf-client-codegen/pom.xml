@@ -316,7 +316,7 @@
       <dependency>
         <groupId>com.fasterxml.woodstox</groupId>
         <artifactId>woodstox-core</artifactId>
-        <version>6.5.0</version>
+        <version>6.7.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.santuario</groupId>
