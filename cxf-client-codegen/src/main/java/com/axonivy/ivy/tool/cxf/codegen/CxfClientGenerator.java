@@ -44,8 +44,11 @@ public class CxfClientGenerator {
   private final Path tmpGenDir;
   private boolean insecureSSL;
 
-  public record CodegenOpts(Map<String, String> nsMappings, boolean underscoreNames) {
-    public static final CodegenOpts DEFAULT = new CodegenOpts(Map.of(), false);
+  public record CodegenOpts(
+    String namespace, 
+    Map<String, String> nsMappings, 
+    boolean underscoreNames) {
+      public static final CodegenOpts DEFAULT = new CodegenOpts(null, Map.of(), false);
   }
 
   public CxfClientGenerator(Path tmpGenDir) {
@@ -84,6 +87,10 @@ public class CxfClientGenerator {
       };
 
       cxfContext.put(ToolConstants.CFG_BINDING, new IvyGeneratorBindings(tmpGenDir).getBindings(options));
+      if (options.namespace() != null) {
+        cxfContext.put(ToolConstants.CFG_PACKAGENAME, options.namespace());
+      }
+      cxfContext.put(ToolConstants.CFG_NEXCLUDE, "org.w3._2001.xmlschema");
       options.nsMappings().forEach((k, v) -> cxfContext.addNamespacePackageMap(k, v));
       cxfGenerator.run(cxfContext);
 

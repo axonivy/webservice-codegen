@@ -98,7 +98,7 @@ public class TestCxfClientCodegen {
     mapping.put("urn:schema.ws.test.ivyteam.ch", "ch.ivyteam.testmapping.schema");
     ToolContext meta = new CxfClientGenerator(tmpDir).generate(
         mockBaseUrl + "/wsdl/IvyEchoService.WSDL",
-        new CxfClientGenerator.CodegenOpts(mapping, false));
+        new CxfClientGenerator.CodegenOpts(null, mapping, false));
 
     String pathPrefix = (packageName + "/").replace('.', '/');
     Path servicePath = tmpDir.resolve(pathPrefix);
@@ -212,7 +212,7 @@ public class TestCxfClientCodegen {
 
     var meta = new CxfClientGenerator(tmpDir).generate(
         this.getClass().getResource("infoshare/InfoShare.wsdl").toString(),
-        new CxfClientGenerator.CodegenOpts(mapping, false));
+        new CxfClientGenerator.CodegenOpts(null, mapping, false));
 
     assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("InfoShare");
 
@@ -225,48 +225,20 @@ public class TestCxfClientCodegen {
     assertThat(tmpDir.resolve(pathPrefix2 + "ObjectFactory.java")).exists();
   }
 
-  // @Test
-  // void translateCxfGeneratorMetaToConfigModel() throws Exception {
-  // var wsdlFile = createLocalWsdl();
-  // var jarKeeper = new JarKeeper();
-  // ToolContext meta = generate(wsdlFile.toUri().toASCIIString(), jarKeeper::keep);
-  // List<WsService> services = CxfModelConverter.toWsConfigModel(meta);
-  // assertThat(services.size()).isEqualTo(1);
-  // WsService echoService = services.get(0);
-  // assertThat(echoService.getServiceClass()).isEqualTo("ch.ivyteam.test.ws.IvyEchoService");
-  // assertThat(echoService.getPorts().stream().map(WsPort::getName)).containsOnly(
-  // "IvyEchoServiceHttpsEndpoint",
-  // "IvyEchoServiceHttpsSoap11Endpoint",
-  // "IvyEchoServiceHttpsSoap12Endpoint",
-  // "IvyEchoServiceHttpEndpoint",
-  // "IvyEchoServiceHttpSoap11Endpoint",
-  // "IvyEchoServiceHttpSoap12Endpoint");
-  // assertThat(echoService.getPorts().stream().map(WsPort::getLocationUri)).containsOnly(
-  // "https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsSoap11Endpoint/",
-  // "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpSoap11Endpoint/",
-  // "https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsSoap12Endpoint/",
-  // "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpSoap12Endpoint/",
-  // "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpEndpoint/",
-  // "https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsEndpoint/");
-  // WsPort soap11 = echoService.getPorts().get(0);
-  // assertThat(soap11.getLocationUri()).contains("test-webservices.ivyteam.io:8443");
-  // assertThat(soap11.getName()).isEqualTo("IvyEchoServiceHttpsSoap11Endpoint");
-  // WsService service = services.iterator().next();
+  @Test
+  void generateWithMultiNs_onePackage() throws Exception {
+    var meta = new CxfClientGenerator(tmpDir).generate(
+        this.getClass().getResource("infoshare/InfoShare.wsdl").toString(),
+        new CxfClientGenerator.CodegenOpts("com.kendox.infoshare", Map.of(), false));
 
-  // try (URLClassLoader classloader = craftClassloader(jarKeeper.clientJar)) {
-  // var collector = new WebServiceOperationsCollector(classloader, service.getServiceClass());
-  // var operations = collector.getOperations("IvyEchoServiceHttpsSoap11Endpoint");
-  // assertThat(operations.stream().map(IWebServiceOperation::getName)).containsOnly(
-  // "waitFor", "getSessionId", "echoDate", "getHelloMessage",
-  // "returnNullObject", "returnVoid", "logMessageToStdOut", "echoObject", "echoString");
-  // var echoString = findOperation(operations, "echoString");
-  // assertThat(inputParams(echoString)).hasSize(1);
-  // assertThat(inputParams(echoString).get(0).getName()).isEqualTo("parameters");
-  // assertThat(inputParams(echoString).get(0).getType().getName())
-  // .isEqualTo("ch.ivyteam.test.ws.schema.EchoString");
-  // assertThat(echoString.getResultType()).isEqualTo("ch.ivyteam.test.ws.schema.EchoStringResponse");
-  // }
-  // }
+    assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("InfoShare");
+
+    assertThat(tmpDir.toFile().list())
+      .containsOnly("com", "globalJaxbBindings.xml", "service.yaml");
+    Path servicePath = tmpDir.resolve("com/kendox/infoshare");
+    assertThat(servicePath.resolve("InfoShare.wsdl")).exists();
+    assertThat(servicePath.resolve("schema1.xsd")).exists();
+  }
 
   // ISSUE XIVY-3546 CXF WebService Creation with undefined element
   @Test
@@ -372,7 +344,7 @@ public class TestCxfClientCodegen {
   @Test
   void generateUnderscoreNames() throws Exception {
     boolean underscoreAsChar = true;
-    var opts = new CxfClientGenerator.CodegenOpts(Map.of(), underscoreAsChar);
+    var opts = new CxfClientGenerator.CodegenOpts(null, Map.of(), underscoreAsChar);
 
     new CxfClientGenerator(tmpDir).generate(getClass().getResource("underscored.wsdl").toString(), opts);
     var bookImpl = Files.readString(tmpDir.resolve("com/cleverbuilder/bookservice/Book.java"));

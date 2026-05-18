@@ -44,11 +44,19 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
   Path outputDir;
 
   /**
+   * Define the package namespace into which classes will be generated. E.g. <code>com.acme.client</code>.
+   * @see #nsMappings for more flexible namespace to package mapping
+   */
+  @Parameter(property = "ivy.generate.webservice.client.namespace")
+  String namespace;
+
+  /**
    * Defines the reflection of WSDL namespaces to Java packages. The format is <code>namespace=package</code>.
    * <pre>
    * &lt;nsMappings&gt;&lt;nsMapping&gt;http://service.soap.connectivity.axonivy.com/=com.axonivy.person.client&lt;/nsMapping&gt;
    * &lt;/nsMappings&gt;
    * </pre>
+   * @see #namespace for a simpler alternative when only one namespace must be created
    */
   @Parameter(property = "ivy.generate.webservice.client.nsMappings")
   List<String> nsMappings;
@@ -85,7 +93,7 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
     try {
       var cxfContext = new CxfClientGenerator(outputDir)
         .insecureSsl(Boolean.TRUE.equals(insecureSSL))
-        .generate(wsdl, new CodegenOpts(mappings(), underscoreNames));
+        .generate(wsdl, new CodegenOpts(namespace, mappings(), underscoreNames));
       getLog().info("Generated CXF client for service: " + cxfContext.getJavaModel().getServiceClasses().keySet());
     } catch (Exception ex) {
       throw new MojoExecutionException("Failed to generate CXF client sources", ex);
