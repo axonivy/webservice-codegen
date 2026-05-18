@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.axonivy.ivy.tool.cxf.codegen.binding.IvyGeneratorBindings;
 import com.axonivy.ivy.tool.cxf.codegen.binding.JAXWSBindingSerializer;
+import com.axonivy.ivy.tool.cxf.codegen.fix.FixCXFSchemaLocation;
 
 /**
  * Plain CXF client jar generator without any Eclipse or Ivy API involved.
@@ -73,8 +74,8 @@ public class CxfClientGenerator {
       options.nsMappings().forEach((k, v) -> cxfContext.addNamespacePackageMap(k, v));
       cxfGenerator.run(cxfContext);
 
-      // TODO: cover with a test
-      // FixCXFSchemaLocation.fixLocalWsdlIfNecessary(tmpClientJar); // Bug fix for CXF-7706
+      generateLocalWsdl(tmpGenDir, cxfContext); // hack; officially only supported in client.jar mode
+      FixCXFSchemaLocation.fixLocalWsdlIfNecessary(tmpGenDir); // Bug fix for CXF-7706
       moveLocalWsdlToService(tmpGenDir, cxfContext);
 
       return cxfContext;
@@ -94,8 +95,6 @@ public class CxfClientGenerator {
       // keep wsdl in root: we don't know which service package to move it to
       return;
     }
-
-    generateLocalWsdl(tmpGenDir, cxfContext); // hack; officialy only supported in client.jar mode
 
     String path = serviceNs.get(0).replace(".", "/");
     Path serviceDirZip = tmpGenDir.resolve(path);
