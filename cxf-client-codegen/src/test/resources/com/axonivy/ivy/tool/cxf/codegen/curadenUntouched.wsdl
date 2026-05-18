@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="asAxonIVY" targetNamespace="urn:ActicleInsert" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="urn:ActicleInsert" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:prodata="urn:schemas-progress-com:xml-prodata:0001" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:S1="urn:soap-fault:details" xmlns:S2="urn:ActicleInsert:asAxonIVY">
+<wsdl:documentation>Author=Javier Garcia, EncodingType=RPC_LITERAL, WSA_Product=11.6 - Fri Oct 16 18:10:06 EDT 2015</wsdl:documentation>
+  <wsdl:types>
+<schema elementFormDefault="unqualified" targetNamespace="urn:soap-fault:details" xmlns="http://www.w3.org/2001/XMLSchema"><complexType name="FaultDetail"><sequence><element name="errorMessage" type="xsd:string"/><element name="requestID" type="xsd:string"/></sequence></complexType></schema>
+<schema elementFormDefault="unqualified" targetNamespace="urn:ActicleInsert:asAxonIVY" xmlns="http://www.w3.org/2001/XMLSchema"><complexType name="getArticleArt_ttAArtRow"><sequence><element name="cCodec" nillable="true" type="xsd:string"/><element name="cBez1" nillable="true" type="xsd:string"/><element name="cBez2" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="getArticleArt_ttAArtParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttAArtRow" type="S2:getArticleArt_ttAArtRow"/></sequence></complexType><complexType name="getArticleByArtNumber_ttArtstRow"><sequence><element name="iArtnr" nillable="true" type="xsd:int"/><element name="cBez" nillable="true" type="xsd:string"/><element name="cHerst" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="getArticleByArtNumber_ttArtstParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttArtstRow" type="S2:getArticleByArtNumber_ttArtstRow"/></sequence></complexType><complexType name="getArticleByWordIndex_ttArtstRow"><sequence><element name="iArtnr" nillable="true" type="xsd:int"/><element name="cBez" nillable="true" type="xsd:string"/><element name="cHerst" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="getArticleByWordIndex_ttArtstParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttArtstRow" type="S2:getArticleByWordIndex_ttArtstRow"/></sequence></complexType><complexType name="getAssort_ttAssortRow"><sequence><element name="cAssortCode" nillable="true" type="xsd:string"/><element name="cAssortBez" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="getAssort_ttAssortParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttAssortRow" type="S2:getAssort_ttAssortRow"/></sequence></complexType><complexType name="dsCompanyParam"><annotation><appinfo><prodata:relation name="Firma-Division" prodata:child="ttDivision" prodata:nested="true" prodata:parent="ttFirma" prodata:relationFields="cFirma,cFirma"/></appinfo></annotation><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttFirma"><complexType><sequence><element name="cFirma" nillable="true" type="xsd:string"/><element name="cBez" nillable="true" type="xsd:string"/><element maxOccurs="unbounded" minOccurs="0" name="ttDivision"><complexType><sequence><element name="cFirma" nillable="true" type="xsd:string"/><element name="cDivision" nillable="true" type="xsd:string"/><element name="cBez" nillable="true" type="xsd:string"/><element name="cPrio" nillable="true" type="xsd:int"/></sequence></complexType></element></sequence></complexType></element></sequence></complexType><complexType name="getCountry_ttLkzRow"><sequence><element name="cLkz" nillable="true" type="xsd:string"/><element name="cBez" nillable="true" type="xsd:string"/><element name="cISO" nillable="true" type="xsd:string"/><element name="lEU" nillable="true" type="xsd:boolean"/></sequence></complexType><complexType name="getCountry_ttLkzParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttLkzRow" type="S2:getCountry_ttLkzRow"/></sequence></complexType><complexType name="getCurrency_ttFrwRow"><sequence><element name="cFrw" nillable="true" type="xsd:string"/><element name="cBez" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="getCurrency_ttFrwParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttFrwRow" type="S2:getCurrency_ttFrwRow"/></sequence></complexType><complexType name="getLanguage_ttSprcdRow"><sequence><element name="iSprcd" nillable="true" type="xsd:int"/><element name="cBez" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="getLanguage_ttSprcdParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttSprcdRow" type="S2:getLanguage_ttSprcdRow"/></sequence></complexType><complexType name="getPriceCode_ttPreisCodeRow"><sequence><element name="cCode" nillable="true" type="xsd:string"/><element name="cBez" nillable="true" type="xsd:string"/><element name="cFrw" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="getPriceCode_ttPreisCodeParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttPreisCodeRow" type="S2:getPriceCode_ttPreisCodeRow"/></sequence></complexType><complexType name="getProducer_ttHerstRow"><sequence><element name="cFirma" nillable="true" type="xsd:string"/><element name="cDivision" nillable="true" type="xsd:string"/><element name="cHerst" nillable="true" type="xsd:string"/><element name="cBez" nillable="true" type="xsd:string"/><element name="iKnr" nillable="true" type="xsd:int"/><element name="iAdresseId" nillable="true" type="xsd:int"/></sequence></complexType><complexType name="getProducer_ttHerstParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttHerstRow" type="S2:getProducer_ttHerstRow"/></sequence></complexType><complexType name="getProductClassification_ttProdKlRow"><sequence><element name="iProdKl" nillable="true" type="xsd:int"/><element name="cBez" nillable="true" type="xsd:string"/><element name="cKlasse" nillable="true" type="xsd:string"/><element name="iRegel" nillable="true" type="xsd:int"/></sequence></complexType><complexType name="getProductClassification_ttProdKlParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttProdKlRow" type="S2:getProductClassification_ttProdKlRow"/></sequence></complexType><complexType name="getProductGroup_ttWarenGrpRow"><sequence><element name="cFirma" nillable="true" type="xsd:string"/><element name="cWg" nillable="true" type="xsd:string"/><element name="cBez" nillable="true" type="xsd:string"/><element name="cDivision" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="getProductGroup_ttWarenGrpParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttWarenGrpRow" type="S2:getProductGroup_ttWarenGrpRow"/></sequence></complexType><complexType name="getRecyclingFeeCategory_ttVRGRow"><sequence><element name="iKat" nillable="true" type="xsd:int"/><element name="cBez" nillable="true" type="xsd:string"/><element name="cBetrag" nillable="true" type="xsd:decimal"/></sequence></complexType><complexType name="getRecyclingFeeCategory_ttVRGParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttVRGRow" type="S2:getRecyclingFeeCategory_ttVRGRow"/></sequence></complexType><complexType name="getSupplier_ttLiefstRow"><sequence><element name="cFirma" nillable="true" type="xsd:string"/><element name="cDivision" nillable="true" type="xsd:string"/><element name="cBez" nillable="true" type="xsd:string"/><element name="iKnr" nillable="true" type="xsd:int"/><element name="iAdresseId" nillable="true" type="xsd:int"/></sequence></complexType><complexType name="getSupplier_ttLiefstParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttLiefstRow" type="S2:getSupplier_ttLiefstRow"/></sequence></complexType><complexType name="getTariffNumber_ttZollPosRow"><sequence><element name="cZPos" nillable="true" type="xsd:string"/><element name="cBez" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="getTariffNumber_ttZollPosParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttZollPosRow" type="S2:getTariffNumber_ttZollPosRow"/></sequence></complexType><complexType name="getToxicityClass_ttToxicRow"><sequence><element name="cCodec" nillable="true" type="xsd:string"/><element name="cBez1" nillable="true" type="xsd:string"/><element name="cBez2" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="getToxicityClass_ttToxicParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttToxicRow" type="S2:getToxicityClass_ttToxicRow"/></sequence></complexType><complexType name="dsEinhParam"><annotation><appinfo><prodata:relation name="Firma-Division" prodata:child="ttEinhBez" prodata:nested="true" prodata:parent="ttEinh" prodata:relationFields="cCode,cCode"/></appinfo></annotation><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttEinh"><complexType><sequence><element name="cCode" nillable="true" type="xsd:string"/><element maxOccurs="unbounded" minOccurs="0" name="ttEinhBez"><complexType><sequence><element name="cCode" nillable="true" type="xsd:string"/><element name="iSprcd" nillable="true" type="xsd:int"/><element name="cBez" nillable="true" type="xsd:string"/></sequence></complexType></element></sequence></complexType></element></sequence></complexType><complexType name="dsVATParam"><annotation><appinfo><prodata:relation name="MwstCD-MwstAns" prodata:child="ttMwstAns" prodata:nested="true" prodata:parent="ttMwstCd" prodata:relationFields="cFirma,cFirma,iCodeArt,iVatCd"/></appinfo></annotation><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttMwstCd"><complexType><sequence><element name="cFirma" nillable="true" type="xsd:string"/><element name="iVatCd" nillable="true" type="xsd:int"/><element name="iCodeKunde" nillable="true" type="xsd:int"/><element name="iCodeArt" nillable="true" type="xsd:int"/><element name="cBez" nillable="true" type="xsd:string"/><element name="cBezShort" nillable="true" type="xsd:string"/><element maxOccurs="unbounded" minOccurs="0" name="ttMwstAns"><complexType><sequence><element name="cFirma" nillable="true" type="xsd:string"/><element name="iVatCd" nillable="true" type="xsd:int"/><element name="fAnsatz" nillable="true" type="xsd:decimal"/><element name="dValidDate" nillable="true" type="xsd:date"/><element name="lVatActive" nillable="true" type="xsd:boolean"/><element name="cBez" nillable="true" type="xsd:string"/><element name="cBezShort" nillable="true" type="xsd:string"/></sequence></complexType></element></sequence></complexType></element></sequence></complexType><complexType name="getVocTaxCategory_ttVOCRow"><sequence><element name="iKat" nillable="true" type="xsd:int"/><element name="cBez" nillable="true" type="xsd:string"/><element name="cBetrag" nillable="true" type="xsd:decimal"/></sequence></complexType><complexType name="getVocTaxCategory_ttVOCParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttVOCRow" type="S2:getVocTaxCategory_ttVOCRow"/></sequence></complexType><complexType name="getWareHouse_ttLagerRow"><sequence><element name="iLager" nillable="true" type="xsd:int"/><element name="cBez" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="getWareHouse_ttLagerParam"><sequence><element maxOccurs="unbounded" minOccurs="0" name="ttLagerRow" type="S2:getWareHouse_ttLagerRow"/></sequence></complexType></schema>
+  </wsdl:types>
+  <wsdl:message name="asAxonIVY_getToxicityClassResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttToxic" type="S2:getToxicityClass_ttToxicParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_isWorking">
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getArticleByWordIndex">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+    <wsdl:part name="ipSearch" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getProducerResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttHerst" type="S2:getProducer_ttHerstParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getArticleByWordIndexResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttArtst" type="S2:getArticleByWordIndex_ttArtstParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getRecyclingFeeCategoryResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttVRG" type="S2:getRecyclingFeeCategory_ttVRGParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getAssortResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttAssort" type="S2:getAssort_ttAssortParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getLanguage">
+    <wsdl:part name="ipSprcd" type="xsd:int"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getPriceCodeResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttPreisCode" type="S2:getPriceCode_ttPreisCodeParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getProductClassificationResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttProdKl" type="S2:getProductClassification_ttProdKlParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getProductGroup">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+    <wsdl:part name="ipDivision" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getUnits">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getVATcodeArt">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+    <wsdl:part name="ipSprcd" type="xsd:int"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getCountryResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttLkz" type="S2:getCountry_ttLkzParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getVocTaxCategory">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getVocTaxCategoryResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttVOC" type="S2:getVocTaxCategory_ttVOCParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getCompanyData">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getCurrency">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getTariffNumberResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttZollPos" type="S2:getTariffNumber_ttZollPosParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getProductGroupResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttWarenGrp" type="S2:getProductGroup_ttWarenGrpParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getToxicityClass">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getSupplier">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+    <wsdl:part name="ipDivision" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getSupplierResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttLiefst" type="S2:getSupplier_ttLiefstParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getRecyclingFeeCategory">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getArticleByArtNumberResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttArtst" type="S2:getArticleByArtNumber_ttArtstParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_isWorkingResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="opAppWorks" type="xsd:boolean"/>
+    <wsdl:part name="opDBWorks" type="xsd:boolean"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getCountry">
+    <wsdl:part name="ipSprcd" type="xsd:int"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getUnitsResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="dsEinh" type="S2:dsEinhParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getAssort">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getCurrencyResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttFrw" type="S2:getCurrency_ttFrwParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getArticleArt">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getPriceCode">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getTariffNumber">
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getArticleByArtNumber">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+    <wsdl:part name="ipArtnr" type="xsd:int"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getCompanyDataResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="dsCompany" type="S2:dsCompanyParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getProductClassification">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+    <wsdl:part name="ipProdKl" type="xsd:int"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getProducer">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+    <wsdl:part name="ipHerst" type="xsd:string"/>
+    <wsdl:part name="ipDivision" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getVATcodeArtResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="dsVAT" type="S2:dsVATParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getArticleArtResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttAArt" type="S2:getArticleArt_ttAArtParam"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getWareHouse">
+    <wsdl:part name="ipFirma" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getWareHouseResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttLager" type="S2:getWareHouse_ttLagerParam"/>
+  </wsdl:message>
+  <wsdl:message name="FaultDetailMessage">
+    <wsdl:part name="FaultDetail" type="S1:FaultDetail"/>
+  </wsdl:message>
+  <wsdl:message name="asAxonIVY_getLanguageResponse">
+    <wsdl:part name="opERROR" type="xsd:boolean"/>
+    <wsdl:part name="opMESSAGE" type="xsd:string"/>
+    <wsdl:part name="ttSprcd" type="S2:getLanguage_ttSprcdParam"/>
+  </wsdl:message>
+  <wsdl:portType name="asAxonIVYObj">
+    <wsdl:operation name="getArticleArt" parameterOrder="ipFirma opERROR opMESSAGE ttAArt">
+      <wsdl:input message="tns:asAxonIVY_getArticleArt"/>
+      <wsdl:output message="tns:asAxonIVY_getArticleArtResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getArticleByArtNumber" parameterOrder="ipFirma ipArtnr opERROR opMESSAGE ttArtst">
+      <wsdl:input message="tns:asAxonIVY_getArticleByArtNumber"/>
+      <wsdl:output message="tns:asAxonIVY_getArticleByArtNumberResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getArticleByWordIndex" parameterOrder="ipFirma ipSearch opERROR opMESSAGE ttArtst">
+      <wsdl:input message="tns:asAxonIVY_getArticleByWordIndex"/>
+      <wsdl:output message="tns:asAxonIVY_getArticleByWordIndexResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getAssort" parameterOrder="ipFirma opERROR opMESSAGE ttAssort">
+      <wsdl:input message="tns:asAxonIVY_getAssort"/>
+      <wsdl:output message="tns:asAxonIVY_getAssortResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getCompanyData" parameterOrder="ipFirma opERROR opMESSAGE dsCompany">
+      <wsdl:input message="tns:asAxonIVY_getCompanyData"/>
+      <wsdl:output message="tns:asAxonIVY_getCompanyDataResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getCountry" parameterOrder="ipSprcd opERROR opMESSAGE ttLkz">
+      <wsdl:input message="tns:asAxonIVY_getCountry"/>
+      <wsdl:output message="tns:asAxonIVY_getCountryResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getCurrency" parameterOrder="ipFirma opERROR opMESSAGE ttFrw">
+      <wsdl:input message="tns:asAxonIVY_getCurrency"/>
+      <wsdl:output message="tns:asAxonIVY_getCurrencyResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getLanguage" parameterOrder="ipSprcd opERROR opMESSAGE ttSprcd">
+      <wsdl:input message="tns:asAxonIVY_getLanguage"/>
+      <wsdl:output message="tns:asAxonIVY_getLanguageResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getPriceCode" parameterOrder="ipFirma opERROR opMESSAGE ttPreisCode">
+      <wsdl:input message="tns:asAxonIVY_getPriceCode"/>
+      <wsdl:output message="tns:asAxonIVY_getPriceCodeResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getProducer" parameterOrder="ipFirma ipHerst ipDivision opERROR opMESSAGE ttHerst">
+      <wsdl:input message="tns:asAxonIVY_getProducer"/>
+      <wsdl:output message="tns:asAxonIVY_getProducerResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getProductClassification" parameterOrder="ipFirma ipProdKl opERROR opMESSAGE ttProdKl">
+      <wsdl:input message="tns:asAxonIVY_getProductClassification"/>
+      <wsdl:output message="tns:asAxonIVY_getProductClassificationResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getProductGroup" parameterOrder="ipFirma ipDivision opERROR opMESSAGE ttWarenGrp">
+      <wsdl:input message="tns:asAxonIVY_getProductGroup"/>
+      <wsdl:output message="tns:asAxonIVY_getProductGroupResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getRecyclingFeeCategory" parameterOrder="ipFirma opERROR opMESSAGE ttVRG">
+      <wsdl:input message="tns:asAxonIVY_getRecyclingFeeCategory"/>
+      <wsdl:output message="tns:asAxonIVY_getRecyclingFeeCategoryResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getSupplier" parameterOrder="ipFirma ipDivision opERROR opMESSAGE ttLiefst">
+      <wsdl:input message="tns:asAxonIVY_getSupplier"/>
+      <wsdl:output message="tns:asAxonIVY_getSupplierResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getTariffNumber" parameterOrder="opERROR opMESSAGE ttZollPos">
+      <wsdl:input message="tns:asAxonIVY_getTariffNumber"/>
+      <wsdl:output message="tns:asAxonIVY_getTariffNumberResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getToxicityClass" parameterOrder="ipFirma opERROR opMESSAGE ttToxic">
+      <wsdl:input message="tns:asAxonIVY_getToxicityClass"/>
+      <wsdl:output message="tns:asAxonIVY_getToxicityClassResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getUnits" parameterOrder="ipFirma opERROR opMESSAGE dsEinh">
+      <wsdl:input message="tns:asAxonIVY_getUnits"/>
+      <wsdl:output message="tns:asAxonIVY_getUnitsResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getVATcodeArt" parameterOrder="ipFirma ipSprcd opERROR opMESSAGE dsVAT">
+      <wsdl:input message="tns:asAxonIVY_getVATcodeArt"/>
+      <wsdl:output message="tns:asAxonIVY_getVATcodeArtResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getVocTaxCategory" parameterOrder="ipFirma opERROR opMESSAGE ttVOC">
+      <wsdl:input message="tns:asAxonIVY_getVocTaxCategory"/>
+      <wsdl:output message="tns:asAxonIVY_getVocTaxCategoryResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getWareHouse" parameterOrder="ipFirma opERROR opMESSAGE ttLager">
+      <wsdl:input message="tns:asAxonIVY_getWareHouse"/>
+      <wsdl:output message="tns:asAxonIVY_getWareHouseResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="isWorking" parameterOrder="opERROR opMESSAGE opAppWorks opDBWorks">
+      <wsdl:input message="tns:asAxonIVY_isWorking"/>
+      <wsdl:output message="tns:asAxonIVY_isWorkingResponse"/>
+      <wsdl:fault name="asAxonIVYFault" message="tns:FaultDetailMessage"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="asAxonIVYObj" type="tns:asAxonIVYObj">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getArticleArt">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getArticleByArtNumber">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getArticleByWordIndex">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getAssort">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getCompanyData">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getCountry">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getCurrency">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getLanguage">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getPriceCode">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getProducer">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getProductClassification">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getProductGroup">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRecyclingFeeCategory">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getSupplier">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTariffNumber">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getToxicityClass">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getUnits">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getVATcodeArt">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getVocTaxCategory">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getWareHouse">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="isWorking">
+      <soap:operation soapAction="" style="rpc"/>
+      <wsdl:input>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="urn:ActicleInsert:asAxonIVY"/>
+      </wsdl:output>
+      <wsdl:fault name="asAxonIVYFault">
+        <soap:fault name="asAxonIVYFault" use="literal" namespace="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="asAxonIVYService">
+    <wsdl:port name="asAxonIVYObj" binding="tns:asAxonIVYObj">
+<wsdl:documentation></wsdl:documentation>
+      <soap:address location="http://dev-webservices.curaden.ch:8080/AxonIVY/wsaAxonIVY"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
