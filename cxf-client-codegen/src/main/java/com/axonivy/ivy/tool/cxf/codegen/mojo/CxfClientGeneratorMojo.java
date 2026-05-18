@@ -66,7 +66,10 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
   @Parameter(property = "ivy.generate.webservice.client.underscoreNames", defaultValue = "false")
   Boolean underscoreNames;
 
-  // TODO: enable insecure SSL
+  /**
+   * Allow insecure SSL connections when fetching WSDL and XSD resources from HTTPS endpoints. 
+   * This is required for endpoints with self-signed certificates.
+   */
   @Parameter(property = "ivy.generate.webservice.client.insecureSSL", defaultValue = "false")
   Boolean insecureSSL;
 
@@ -81,8 +84,9 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
 
     ToolContext cxfContext;
     try {
-      cxfContext = CxfClientGenerator.generate(wsdl, outputDir,
-          new CodegenOpts(mappings(), underscoreNames));
+      cxfContext = new CxfClientGenerator(outputDir)
+        .insecureSsl(Boolean.TRUE.equals(insecureSSL))
+        .generate(wsdl, new CodegenOpts(mappings(), underscoreNames));
       getLog().info("Generated CXF client context: " + cxfContext);
     } catch (Exception ex) {
       throw new MojoExecutionException("Failed to generate CXF client sources", ex);

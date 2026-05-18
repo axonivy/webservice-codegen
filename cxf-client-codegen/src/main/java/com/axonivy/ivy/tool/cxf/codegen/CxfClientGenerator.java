@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.axonivy.ivy.tool.cxf.codegen.binding.IvyGeneratorBindings;
 import com.axonivy.ivy.tool.cxf.codegen.binding.JAXWSBindingSerializer;
 import com.axonivy.ivy.tool.cxf.codegen.fix.FixCXFSchemaLocation;
+import com.axonivy.ivy.tool.cxf.codegen.ssl.InsecureSSL;
 
 /**
  * Plain CXF client jar generator without any Eclipse or Ivy API involved.
@@ -39,12 +40,23 @@ import com.axonivy.ivy.tool.cxf.codegen.fix.FixCXFSchemaLocation;
 public class CxfClientGenerator {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CxfClientGenerator.class);
+  private final Path tmpGenDir;
+  private boolean insecureSSL;
 
   public record CodegenOpts(Map<String, String> nsMappings, boolean underscoreNames) {
     public static final CodegenOpts DEFAULT = new CodegenOpts(Map.of(), false);
   }
 
-  public static ToolContext generate(String wsdlUri, Path tmpGenDir, CodegenOpts options) throws Exception {
+  public CxfClientGenerator(Path tmpGenDir) {
+    this.tmpGenDir = tmpGenDir;
+  }
+
+  public CxfClientGenerator insecureSsl(boolean insecure) {
+    this.insecureSSL = insecure;
+    return this;
+  }
+
+  public ToolContext generate(String wsdlUri, CodegenOpts options) throws Exception {
     List<String> args = Arrays.asList(
         "-d", tmpGenDir.toAbsolutePath().toString(), // outputDir
         "-clientjar", tmpGenDir.resolve("client.jar").getFileName().toString(), // fake it till java sources are generated.
@@ -82,9 +94,10 @@ public class CxfClientGenerator {
     };
 
     return withRedirectConfigurer(
-        withSchemaAccProperty(
-            withHttpPortFactory(
-                generate))).call();
+      withSchemaAccProperty(
+        withHttpPortFactory(
+          new InsecureSSL(insecureSSL).withSSL(
+            generate)))).call();
   }
 
   private static void moveLocalWsdlToService(Path tmpGenDir, ToolContext cxfContext) throws Exception {
@@ -140,13 +153,15 @@ public class CxfClientGenerator {
     return () -> {
       Properties originalProps = (Properties) System.getProperties().clone();
       System.setProperty("http.autoredirect", Boolean.TRUE.toString());
-      Bus myBus = BusFactory.getDefaultBus();
-      HTTPConduitConfigurer configurer = myBus.getExtension(HTTPConduitConfigurer.class);
+      Bus originalBus = BusFactory.getDefaultBus(false);
+      Bus bus = BusFactory.newInstance().createBus();
+      BusFactory.setDefaultBus(bus);
       try {
-        myBus.setExtension(new RedirectConfigurer(), HTTPConduitConfigurer.class);
+        bus.setExtension(new RedirectConfigurer(), HTTPConduitConfigurer.class);
         return callable.call();
       } finally {
-        myBus.setExtension(configurer, HTTPConduitConfigurer.class);
+        bus.shutdown(true);
+        BusFactory.setDefaultBus(originalBus);
         System.setProperties(originalProps);
       }
     };
