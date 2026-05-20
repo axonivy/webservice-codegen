@@ -74,11 +74,11 @@ public class TestCxfClientCodegen {
   void generate_https() throws Exception {
     String httpsWsdl = "https://localhost:" + mock.getPort() + "/wsdl/IvyEchoService.WSDL";
     var meta = new CxfClientGenerator(tmpDir)
-      .insecureSsl(true)
-      .generate(httpsWsdl, CxfClientGenerator.CodegenOpts.DEFAULT);
+        .insecureSsl(true)
+        .generate(httpsWsdl, CxfClientGenerator.CodegenOpts.DEFAULT);
     assertThat(meta.getJavaModel().getServiceClasses())
-      .as("opt-in insecure SSL context allows fetching from HTTPS endpoints with self-signed certificates")
-      .containsOnlyKeys("IvyEchoService");
+        .as("opt-in insecure SSL context allows fetching from HTTPS endpoints with self-signed certificates")
+        .containsOnlyKeys("IvyEchoService");
   }
 
   @Test
@@ -86,8 +86,8 @@ public class TestCxfClientCodegen {
     String httpsWsdl = "https://localhost:" + mock.getPort() + "/wsdl/IvyEchoService.WSDL";
     assertThatThrownBy(() -> new CxfClientGenerator(tmpDir).generate(
         httpsWsdl, CxfClientGenerator.CodegenOpts.DEFAULT))
-        .as("WSDL and XSD resources are by default only fetched from verified HTTPS endpoints")
-        .isInstanceOf(Exception.class);
+            .as("WSDL and XSD resources are by default only fetched from verified HTTPS endpoints")
+            .isInstanceOf(Exception.class);
   }
 
   @Test
@@ -186,8 +186,7 @@ public class TestCxfClientCodegen {
         .as("list getters and setters")
         .contains(
             "public List<String> getNames()",
-          "public void setNames(List<String> value)"
-        );
+            "public void setNames(List<String> value)");
 
     assertThat(impl)
         .as("wrapper types getters and setters")

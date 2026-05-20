@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.cxf.tools.common.ToolContext;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -67,7 +66,7 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
   Boolean underscoreNames;
 
   /**
-   * Allow insecure SSL connections when fetching WSDL and XSD resources from HTTPS endpoints. 
+   * Allow insecure SSL connections when fetching WSDL and XSD resources from HTTPS endpoints.
    * This is required for endpoints with self-signed certificates.
    */
   @Parameter(property = "ivy.generate.webservice.client.insecureSSL", defaultValue = "false")
@@ -79,13 +78,15 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
       return;
     }
 
-    new CxfClientGeneratorFiles(outputDir).cleanup(getLog()::info);
-    getLog().info("Generating CXF client sources for WSDL: " + wsdl);
-
     try {
+      var files = new CxfClientGeneratorFiles(outputDir);
+      files.cleanup(getLog()::info);
+      files.createDir();
+
+      getLog().info("Generating CXF client sources for WSDL: " + wsdl);
       var cxfContext = new CxfClientGenerator(outputDir)
-        .insecureSsl(Boolean.TRUE.equals(insecureSSL))
-        .generate(wsdl, new CodegenOpts(mappings(), underscoreNames));
+          .insecureSsl(Boolean.TRUE.equals(insecureSSL))
+          .generate(wsdl, new CodegenOpts(mappings(), underscoreNames));
       getLog().info("Generated CXF client for service: " + cxfContext.getJavaModel().getServiceClasses().keySet());
     } catch (Exception ex) {
       throw new MojoExecutionException("Failed to generate CXF client sources", ex);

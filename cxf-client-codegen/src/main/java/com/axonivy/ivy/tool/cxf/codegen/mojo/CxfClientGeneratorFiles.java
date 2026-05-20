@@ -17,6 +17,17 @@ public class CxfClientGeneratorFiles {
     this.outputDir = outputDir;
   }
 
+  public void createDir() {
+    if (outputDir == null) {
+      return;
+    }
+    try {
+      Files.createDirectories(outputDir);
+    } catch (IOException ex) {
+      throw new UncheckedIOException("Failed to create client directory " + outputDir, ex);
+    }
+  }
+
   public void cleanup(Consumer<String> log) {
     if (outputDir == null) {
       return;
