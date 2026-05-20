@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.cxf.tools.common.ToolContext;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;

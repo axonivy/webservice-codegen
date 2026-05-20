@@ -50,7 +50,7 @@ public class InsecureSSL {
         var insecureContext = createInsecureContext();
         SSLContext.setDefault(insecureContext);
         HttpsURLConnection.setDefaultSSLSocketFactory(insecureContext.getSocketFactory());
-        HttpsURLConnection.setDefaultHostnameVerifier((host, session) -> true);
+        HttpsURLConnection.setDefaultHostnameVerifier((_, _) -> true);
         return callable.call();
       } finally {
         SSLContext.setDefault(originalContext);
