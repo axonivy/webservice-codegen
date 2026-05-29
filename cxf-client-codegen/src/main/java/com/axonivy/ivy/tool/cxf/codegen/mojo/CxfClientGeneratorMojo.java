@@ -43,15 +43,24 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
   Path outputDir;
 
   /**
+   * Defines the java package of the generated client. E.g. <code>com.acme.soap.service.client</code>
+   */
+  @Parameter(property = "ivy.generate.webservice.client.package")
+  String packageName;
+
+  /**
    * Defines the reflection of WSDL namespaces to Java packages. The format is <code>namespace@package</code>.
    * <pre>
    * &lt;nsMappings&gt;&lt;nsMapping&gt;http://service.soap.connectivity.axonivy.com/@com.axonivy.person.client&lt;/nsMapping&gt;
    * &lt;/nsMappings&gt;
    * </pre>
-   * For command line usage, separate mappings with commas: 
+   * For command line usage, separate mappings with commas:
    * <code>-Divy.generate.webservice.client.nsMappings=http://soap.axonivy.com/person.wsdl/@com.axonivy.person.client,http://another.namespace/@com.another.package</code>
+   *
+   * @deprecated Use {@link #packageName} instead. This deprecated approach only remains to ease migration for existing clients migrating from Designer LTS12.
    */
   @Parameter(property = "ivy.generate.webservice.client.nsMappings")
+  @Deprecated(since = "1.0.0")
   List<String> nsMappings;
 
   /**
@@ -88,7 +97,7 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
       getLog().info("Generating CXF client sources for WSDL: " + wsdl);
       var cxfContext = new CxfClientGenerator(outputDir)
           .insecureSsl(Boolean.TRUE.equals(insecureSSL))
-          .generate(wsdl, new CodegenOpts(mappings(), underscoreNames));
+          .generate(wsdl, new CodegenOpts(packageName, mappings(), underscoreNames));
       getLog().info("Generated CXF client for service: " + cxfContext.getJavaModel().getServiceClasses().keySet());
     } catch (Exception ex) {
       throw new MojoExecutionException("Failed to generate CXF client sources", ex);
