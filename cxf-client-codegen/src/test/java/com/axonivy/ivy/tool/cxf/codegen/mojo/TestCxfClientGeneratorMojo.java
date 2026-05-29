@@ -30,7 +30,7 @@ class TestCxfClientGeneratorMojo {
   void generate(@TempDir Path out) throws Exception {
     var echoOut = out.resolve("my-workspace").resolve("my-project").resolve("src_generated").resolve("soap").resolve("echoService");
     mojo.wsdl = TestCxfClientCodegen.class.getResource("IvyEchoService.WSDL").toURI().toString();
-    mojo.nsMappings = List.of("urn:ws.test.ivyteam.ch=com.acme.ivy.echo");
+    mojo.nsMappings = List.of("urn:ws.test.ivyteam.ch@com.acme.ivy.echo");
     mojo.outputDir = echoOut;
     mojo.execute();
 
@@ -49,7 +49,7 @@ class TestCxfClientGeneratorMojo {
   @Test
   void regenerate_cleanup(@TempDir Path out) throws Exception {
     mojo.wsdl = TestCxfClientCodegen.class.getResource("IvyEchoService.WSDL").toURI().toString();
-    mojo.nsMappings = List.of("urn:ws.test.ivyteam.ch=com.acme.ivy.echo");
+    mojo.nsMappings = List.of("urn:ws.test.ivyteam.ch@com.acme.ivy.echo");
     mojo.outputDir = out;
 
     var legacy = out.resolve("com/acme/ivy/echo").resolve("MyClient.java");

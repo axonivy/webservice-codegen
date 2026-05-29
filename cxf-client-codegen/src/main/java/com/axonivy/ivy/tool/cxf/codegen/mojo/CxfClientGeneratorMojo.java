@@ -43,11 +43,13 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
   Path outputDir;
 
   /**
-   * Defines the reflection of WSDL namespaces to Java packages. The format is <code>namespace=package</code>.
+   * Defines the reflection of WSDL namespaces to Java packages. The format is <code>namespace@package</code>.
    * <pre>
-   * &lt;nsMappings&gt;&lt;nsMapping&gt;http://service.soap.connectivity.axonivy.com/=com.axonivy.person.client&lt;/nsMapping&gt;
+   * &lt;nsMappings&gt;&lt;nsMapping&gt;http://service.soap.connectivity.axonivy.com/@com.axonivy.person.client&lt;/nsMapping&gt;
    * &lt;/nsMappings&gt;
    * </pre>
+   * For command line usage, separate mappings with commas: 
+   * <code>-Divy.generate.webservice.client.nsMappings=http://soap.axonivy.com/person.wsdl/@com.axonivy.person.client,http://another.namespace/@com.another.package</code>
    */
   @Parameter(property = "ivy.generate.webservice.client.nsMappings")
   List<String> nsMappings;
@@ -98,7 +100,7 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
       return Map.of();
     }
     return nsMappings.stream()
-        .map(s -> s.split("="))
+        .map(s -> s.split("@"))
         .collect(Collectors.toMap(a -> a[0], a -> a[1]));
   }
 
