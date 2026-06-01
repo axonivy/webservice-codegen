@@ -30,6 +30,27 @@ class TestCxfClientGeneratorMojo {
   void generate(@TempDir Path out) throws Exception {
     var echoOut = out.resolve("my-workspace").resolve("my-project").resolve("src_generated").resolve("soap").resolve("echoService");
     mojo.wsdl = TestCxfClientCodegen.class.getResource("IvyEchoService.WSDL").toURI().toString();
+    mojo.namespace = "com.acme.ivy.echo";
+    mojo.outputDir = echoOut;
+    mojo.execute();
+
+    var echo = echoOut.resolve("com/acme/ivy/echo");
+    try (var sources = Files.list(echo)) {
+      assertThat(sources)
+          .extracting(p -> p.getFileName().toString())
+          .contains("IvyEchoService.java", "IvyEchoServicePortType.java");
+    }
+
+    assertThat(echo.resolve("IvyEchoService.wsdl"))
+        .as("Used WSDL is copied to service; and read at runtime by JAX-WS impl")
+        .exists();
+  }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  void generate_legacyMapping(@TempDir Path out) throws Exception {
+    var echoOut = out.resolve("my-workspace").resolve("my-project").resolve("src_generated").resolve("soap").resolve("echoService");
+    mojo.wsdl = TestCxfClientCodegen.class.getResource("IvyEchoService.WSDL").toURI().toString();
     mojo.nsMappings = List.of("urn:ws.test.ivyteam.ch@com.acme.ivy.echo");
     mojo.outputDir = echoOut;
     mojo.execute();
@@ -49,7 +70,7 @@ class TestCxfClientGeneratorMojo {
   @Test
   void regenerate_cleanup(@TempDir Path out) throws Exception {
     mojo.wsdl = TestCxfClientCodegen.class.getResource("IvyEchoService.WSDL").toURI().toString();
-    mojo.nsMappings = List.of("urn:ws.test.ivyteam.ch@com.acme.ivy.echo");
+    mojo.namespace = "com.acme.ivy.echo";
     mojo.outputDir = out;
 
     var legacy = out.resolve("com/acme/ivy/echo").resolve("MyClient.java");

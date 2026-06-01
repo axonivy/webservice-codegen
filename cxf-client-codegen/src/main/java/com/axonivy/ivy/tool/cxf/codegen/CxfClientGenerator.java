@@ -7,8 +7,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,8 +46,11 @@ public class CxfClientGenerator {
   private final Path tmpGenDir;
   private boolean insecureSSL;
 
-  public record CodegenOpts(Map<String, String> nsMappings, boolean underscoreNames) {
-    public static final CodegenOpts DEFAULT = new CodegenOpts(Map.of(), false);
+  public record CodegenOpts(
+      String packageName,
+      Map<String, String> nsMappings,
+      boolean underscoreNames) {
+    public static final CodegenOpts DEFAULT = new CodegenOpts(null, Map.of(), false);
   }
 
   public CxfClientGenerator(Path tmpGenDir) {
@@ -84,6 +89,10 @@ public class CxfClientGenerator {
       };
 
       cxfContext.put(ToolConstants.CFG_BINDING, new IvyGeneratorBindings(tmpGenDir).getBindings(options));
+
+      Optional.ofNullable(options.packageName())
+          .filter(Predicate.not(String::isBlank))
+          .ifPresent(pkg -> cxfContext.put(ToolConstants.CFG_PACKAGENAME, pkg));
       options.nsMappings().forEach((k, v) -> cxfContext.addNamespacePackageMap(k, v));
       cxfGenerator.run(cxfContext);
 
@@ -96,10 +105,10 @@ public class CxfClientGenerator {
     };
 
     return withRedirectConfigurer(
-      withSchemaAccProperty(
-        withHttpPortFactory(
-          new InsecureSSL(insecureSSL).withSSL(
-            generate)))).call();
+        withSchemaAccProperty(
+            withHttpPortFactory(
+                new InsecureSSL(insecureSSL).withSSL(
+                    generate)))).call();
   }
 
   private static void moveLocalWsdlToService(Path tmpGenDir, ToolContext cxfContext) throws Exception {
