@@ -21,7 +21,7 @@ The generator can be run using Maven's CLI:
 mvn com.axonivy.ivy.tool.soap:cxf-client-codegen:generate-cxf-client\
  -Divy.generate.webservice.client.wsdl=https://example.com/service?wsdl\
  -Divy.generate.webservice.client.output=src_generated/soap/myService\
- -Divy.generate.webservice.client.packageName=com.example.service.client
+ -Divy.generate.webservice.client.namespace=com.example.service.client
 ```
 
 ### CI
@@ -45,7 +45,7 @@ With this you don't need to include the generated sources under version control.
           <configuration>
             <wsdl>https://example.com/service?wsdl</wsdl>
             <outputDir>${basedir}/src_generated/soap/myService</outputDir>
-            <packageName>com.example.service.client</packageName>
+            <namespace>com.example.service.client</namespace>
           </configuration>
         </execution>
       </executions>
@@ -61,7 +61,7 @@ With this you don't need to include the generated sources under version control.
 |-----------|-------------|---------|-------------|
 | `wsdl` | `ivy.generate.webservice.client.wsdl` | *(required)* | URI or path to the WSDL file |
 | `outputDir` | `ivy.generate.webservice.client.output` | *(required)* | Directory to write the generated sources into |
-| `packageName` | `ivy.generate.webservice.client.packageName` | — | Java package name for the generated client classes |
+| `namespace` | `ivy.generate.webservice.client.namespace` | — | Java package name for the generated client classes |
 | `underscoreNames` | `ivy.generate.webservice.client.underscoreNames` | `false` | Preserve underscore distinctions in field names (e.g. `PRICE_DATE` vs `PRICEDATE`) |
 | `insecureSSL` | `ivy.generate.webservice.client.insecureSSL` | `false` | Allow insecure SSL connections when fetching WSDL from HTTPS endpoints with self-signed certificates |
 | `skipGenerate` | `ivy.generate.webservice.client.skip` | `false` | Skip code generation entirely |
