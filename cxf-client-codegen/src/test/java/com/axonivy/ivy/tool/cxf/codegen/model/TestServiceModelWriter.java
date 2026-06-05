@@ -13,20 +13,22 @@ class TestServiceModelWriter {
   @Test
   void storeNameAndPorts(@TempDir Path tmpDir) throws Exception {
     generateResource("IvyEchoService.WSDL", tmpDir);
-    Path service = tmpDir.resolve("service.yaml");
+    Path service = tmpDir.resolve("service.json");
     var model = Files.readString(service);
     assertThat(model)
       .as("Store name and ports for config/webservice-clients.yaml")
       .isEqualTo("""
-        webService:
-          name: ch.ivyteam.test.ws.IvyEchoService
-          ports:
-            IvyEchoServiceHttpsSoap11Endpoint: https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsSoap11Endpoint/
-            IvyEchoServiceHttpEndpoint: http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpEndpoint/
-            IvyEchoServiceHttpsSoap12Endpoint: https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsSoap12Endpoint/
-            IvyEchoServiceHttpSoap12Endpoint: http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpSoap12Endpoint/
-            IvyEchoServiceHttpsEndpoint: https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsEndpoint/
-            IvyEchoServiceHttpSoap11Endpoint: http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpSoap11Endpoint/
+        {
+          "service" : "ch.ivyteam.test.ws.IvyEchoService",
+          "ports" : {
+            "IvyEchoServiceHttpsSoap11Endpoint" : "https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsSoap11Endpoint/",
+            "IvyEchoServiceHttpEndpoint" : "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpEndpoint/",
+            "IvyEchoServiceHttpsSoap12Endpoint" : "https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsSoap12Endpoint/",
+            "IvyEchoServiceHttpSoap12Endpoint" : "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpSoap12Endpoint/",
+            "IvyEchoServiceHttpsEndpoint" : "https://test-webservices.ivyteam.io:8443/axis2/services/IvyEchoService.IvyEchoServiceHttpsEndpoint/",
+            "IvyEchoServiceHttpSoap11Endpoint" : "http://test-webservices.ivyteam.io:8080/axis2/services/IvyEchoService.IvyEchoServiceHttpSoap11Endpoint/"
+          }
+        }\
         """);
   }
 

@@ -1,23 +1,21 @@
 package com.axonivy.ivy.tool.cxf.codegen.model;
 
 import java.io.IOException;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.apache.cxf.tools.common.model.JavaModel;
 import org.apache.cxf.tools.common.model.JavaServiceClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class ServiceModelWriter {
-
+  
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceModelWriter.class);
+  private static final ObjectMapper MAPPER = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
   public void write(JavaModel javaModel, Path tmpDir) throws IOException {
     if (javaModel.getServiceClasses().isEmpty()) {
@@ -28,7 +26,7 @@ public class ServiceModelWriter {
       "but found: {}. Only the first one will be stored.", javaModel.getServiceClasses().keySet());
     }
     var webService = asMap(javaModel.getServiceClasses().values().iterator().next());
-    toYaml(webService, tmpDir.resolve("service.yaml"));
+    toJson(webService, tmpDir.resolve("service.json"));
   }
 
   private static Object asMap(JavaServiceClass service) {
@@ -38,19 +36,14 @@ public class ServiceModelWriter {
     }
 
     var webService = new LinkedHashMap<String, Object>();
-    webService.put("name", service.getFullClassName());
+    webService.put("service", service.getFullClassName());
     webService.put("ports", ports);
 
-    return Map.of("webService", webService);
+    return webService;
   }
 
-  private void toYaml(Object service, Path outputFile) throws IOException {
-    var options = new DumperOptions();
-    options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-    var yaml = new Yaml(options);
-    try (Writer writer = Files.newBufferedWriter(outputFile, StandardCharsets.UTF_8)) {
-      yaml.dump(service, writer);
-    }
+  private void toJson(Object service, Path outputFile) throws IOException {
+    MAPPER.writeValue(outputFile.toFile(), service);
   }
 
 }
