@@ -64,6 +64,7 @@ With this you don't need to include the generated sources under version control.
 | `namespace` | `ivy.generate.webservice.client.namespace` | — | Java package name for the generated client classes |
 | `underscoreNames` | `ivy.generate.webservice.client.underscoreNames` | `false` | Preserve underscore distinctions in field names (e.g. `PRICE_DATE` vs `PRICEDATE`) |
 | `insecureSSL` | `ivy.generate.webservice.client.insecureSSL` | `false` | Allow insecure SSL connections when fetching WSDL from HTTPS endpoints with self-signed certificates |
+| `writeServiceInfo` | `ivy.generate.webservice.client.writeServiceInfo` | `false` | Opt in to write service metadata to `service.json` in the generation output directory |
 | `skipGenerate` | `ivy.generate.webservice.client.skip` | `false` | Skip code generation entirely |
 
 ## FAQ

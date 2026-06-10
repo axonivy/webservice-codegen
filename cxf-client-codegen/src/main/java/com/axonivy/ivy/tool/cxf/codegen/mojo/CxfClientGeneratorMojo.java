@@ -83,6 +83,13 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
   @Parameter(property = "ivy.generate.webservice.client.insecureSSL", defaultValue = "false")
   Boolean insecureSSL;
 
+  /**
+   * Write service information to a file. It contains the 'service' type and 'ports' 
+   * which can be referred in the webservice-clients.yaml.
+   */
+  @Parameter(property = "ivy.generate.webservice.client.writeServiceInfo", defaultValue = "false")
+  Boolean writeServiceInfo;
+
   @Override
   public void execute() throws MojoExecutionException {
     if (skipGenerate) {
@@ -97,7 +104,7 @@ public class CxfClientGeneratorMojo extends AbstractMojo {
       getLog().info("Generating CXF client sources for WSDL: " + wsdl);
       var cxfContext = new CxfClientGenerator(outputDir)
           .insecureSsl(Boolean.TRUE.equals(insecureSSL))
-          .generate(wsdl, new CodegenOpts(namespace, mappings(), underscoreNames));
+          .generate(wsdl, new CodegenOpts(namespace, mappings(), underscoreNames, writeServiceInfo));
       getLog().info("Generated CXF client for service: " + cxfContext.getJavaModel().getServiceClasses().keySet());
     } catch (Exception ex) {
       throw new MojoExecutionException("Failed to generate CXF client sources", ex);

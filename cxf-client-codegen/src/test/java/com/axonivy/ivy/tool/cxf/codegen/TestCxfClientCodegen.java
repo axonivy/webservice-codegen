@@ -100,7 +100,7 @@ public class TestCxfClientCodegen {
     mapping.put("urn:schema.ws.test.ivyteam.ch", "ch.ivyteam.testmapping.schema");
     ToolContext meta = new CxfClientGenerator(tmpDir).generate(
         mockBaseUrl + "/wsdl/IvyEchoService.WSDL",
-        new CxfClientGenerator.CodegenOpts(null, mapping, false));
+        new CxfClientGenerator.CodegenOpts(null, mapping, false, false));
 
     String pathPrefix = (packageName + "/").replace('.', '/');
     Path servicePath = tmpDir.resolve(pathPrefix);
@@ -216,7 +216,7 @@ public class TestCxfClientCodegen {
 
     var meta = new CxfClientGenerator(tmpDir).generate(
         this.getClass().getResource("infoshare/InfoShare.wsdl").toString(),
-        new CxfClientGenerator.CodegenOpts(null, mapping, false));
+        new CxfClientGenerator.CodegenOpts(null, mapping, false, false));
 
     assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("InfoShare");
 
@@ -235,7 +235,7 @@ public class TestCxfClientCodegen {
 
     var meta = new CxfClientGenerator(tmpDir).generate(
         this.getClass().getResource("infoshare/InfoShare.wsdl").toString(),
-        new CxfClientGenerator.CodegenOpts(packageName, Map.of(), false));
+        new CxfClientGenerator.CodegenOpts(packageName, Map.of(), false, false));
 
     assertThat(meta.getJavaModel().getServiceClasses()).containsOnlyKeys("InfoShare");
 
@@ -352,7 +352,7 @@ public class TestCxfClientCodegen {
   @Test
   void generateUnderscoreNames() throws Exception {
     boolean underscoreAsChar = true;
-    var opts = new CxfClientGenerator.CodegenOpts(null, Map.of(), underscoreAsChar);
+    var opts = new CxfClientGenerator.CodegenOpts(null, Map.of(), underscoreAsChar, false);
 
     new CxfClientGenerator(tmpDir).generate(getClass().getResource("underscored.wsdl").toString(), opts);
     var bookImpl = Files.readString(tmpDir.resolve("com/cleverbuilder/bookservice/Book.java"));
