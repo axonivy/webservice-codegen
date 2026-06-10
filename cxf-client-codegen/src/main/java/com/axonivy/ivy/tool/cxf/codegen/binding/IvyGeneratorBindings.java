@@ -20,6 +20,7 @@ import com.axonivy.ivy.tool.cxf.codegen.CxfClientGenerator.CodegenOpts;
 
 public class IvyGeneratorBindings {
 
+  public static final String GLOBAL_JAXB_BINDINGS_XML = "globalJaxbBindings.xml";
   private final Path tmpGenDir;
 
   public IvyGeneratorBindings(Path tmpGenDir) {
@@ -28,7 +29,7 @@ public class IvyGeneratorBindings {
 
   public String[] getBindings(CodegenOpts options) {
     var props = toProperties(options);
-    var ivyBind = Stream.of("globalJaxbBindings.xml")
+    var ivyBind = Stream.of(GLOBAL_JAXB_BINDINGS_XML)
         .map(res -> interpolate(res, props));
     var statics = List.of(
         IvyGeneratorBindings.class.getResource("noWrappersJaxWsBinding.xml"),
@@ -52,6 +53,14 @@ public class IvyGeneratorBindings {
   private static Map<String, String> toProperties(CodegenOpts options) {
     // https://docs.oracle.com/javase/tutorial/jaxb/intro/custom.html
     return Map.of("underscoreBinding", options.underscoreNames() ? "asCharInWord" : "asWordSeparator");
+  }
+
+  public void cleanUp() {
+    try {
+      Files.delete(tmpGenDir.resolve(GLOBAL_JAXB_BINDINGS_XML));
+    } catch (IOException e) {
+      throw new UncheckedIOException("Failed to delete temporary binding file", e);
+    }
   }
 
 }

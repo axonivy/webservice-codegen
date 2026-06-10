@@ -88,7 +88,8 @@ public class CxfClientGenerator {
         }
       };
 
-      cxfContext.put(ToolConstants.CFG_BINDING, new IvyGeneratorBindings(tmpGenDir).getBindings(options));
+      var bindings = new IvyGeneratorBindings(tmpGenDir);
+      cxfContext.put(ToolConstants.CFG_BINDING, bindings.getBindings(options));
 
       Optional.ofNullable(options.packageName())
           .filter(Predicate.not(String::isBlank))
@@ -99,6 +100,7 @@ public class CxfClientGenerator {
       generateLocalWsdl(tmpGenDir, cxfContext); // hack; officially only supported in client.jar mode
       FixCXFSchemaLocation.fixLocalWsdlIfNecessary(tmpGenDir); // Bug fix for CXF-7706
       moveLocalWsdlToService(tmpGenDir, cxfContext);
+      bindings.cleanUp();
 
       new ServiceModelWriter().write(cxfContext.getJavaModel(), tmpGenDir);
       return cxfContext;
