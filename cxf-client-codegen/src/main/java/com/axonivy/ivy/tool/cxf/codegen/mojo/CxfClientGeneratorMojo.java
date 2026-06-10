@@ -23,7 +23,7 @@ import com.axonivy.ivy.tool.cxf.codegen.CxfClientGenerator.CodegenOpts;
  * <code>
  * mvn com.axonivy.ivy.tool.soap:cxf-client-codegen:generate-cxf-client
  * -Divy.generate.webservice.client.wsdl=https://petstore3.swagger.io/api/v3/openapi.json
- * -Divy.generate.webservice.client.output=src_generated/soap/petstore
+ * -Divy.generate.webservice.client.output=src_generated/ws/petstore
  * </code>
  *
  * @since 1.0.0

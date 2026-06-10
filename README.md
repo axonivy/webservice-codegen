@@ -20,7 +20,7 @@ The generator can be run using Maven's CLI:
 ```bash
 mvn com.axonivy.ivy.tool.soap:cxf-client-codegen:generate-cxf-client\
  -Divy.generate.webservice.client.wsdl=https://example.com/service?wsdl\
- -Divy.generate.webservice.client.output=src_generated/soap/myService\
+ -Divy.generate.webservice.client.output=src_generated/ws/myService\
  -Divy.generate.webservice.client.namespace=com.example.service.client
 ```
 
@@ -44,7 +44,7 @@ With this you don't need to include the generated sources under version control.
           </goals>
           <configuration>
             <wsdl>https://example.com/service?wsdl</wsdl>
-            <outputDir>${basedir}/src_generated/soap/myService</outputDir>
+            <outputDir>${basedir}/src_generated/ws/myService</outputDir>
             <namespace>com.example.service.client</namespace>
           </configuration>
         </execution>
@@ -75,7 +75,7 @@ With this you don't need to include the generated sources under version control.
   ```xml
   <configuration>
     <wsdl>https://internal.corp/service?wsdl</wsdl>
-    <outputDir>${basedir}/src_generated/soap/corpService</outputDir>
+    <outputDir>${basedir}/src_generated/ws/corpService</outputDir>
     <insecureSSL>true</insecureSSL>
   </configuration>
   ```
@@ -110,7 +110,7 @@ With this you don't need to include the generated sources under version control.
             </goals>
             <configuration>
               <wsdl>https://example.com/service?wsdl</wsdl>
-              <outputDir>${basedir}/src_generated/soap/myService</outputDir>
+              <outputDir>${basedir}/src_generated/ws/myService</outputDir>
               <nsMappings>
                 <nsMapping>http://service.example.com/@com.example.service.client</nsMapping>
               </nsMappings>
