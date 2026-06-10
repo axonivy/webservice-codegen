@@ -20,6 +20,7 @@
     <jaxb.version>2.3.9</jaxb.version>
   </properties>
 
+  <name>CXF client codegen</name>
   <description>Generates the CXF client for webservice client calls</description>
   <url>https://github.com/axonivy/cxf-client-codegen</url>
   <scm>
