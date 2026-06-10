@@ -49,8 +49,9 @@ public class CxfClientGenerator {
   public record CodegenOpts(
       String packageName,
       Map<String, String> nsMappings,
-      boolean underscoreNames) {
-    public static final CodegenOpts DEFAULT = new CodegenOpts(null, Map.of(), false);
+      boolean underscoreNames,
+      boolean writeServiceInfo) {
+    public static final CodegenOpts DEFAULT = new CodegenOpts(null, Map.of(), false, false);
   }
 
   public CxfClientGenerator(Path tmpGenDir) {
@@ -102,7 +103,9 @@ public class CxfClientGenerator {
       moveLocalWsdlToService(tmpGenDir, cxfContext);
       bindings.cleanUp();
 
-      new ServiceModelWriter().write(cxfContext.getJavaModel(), tmpGenDir);
+      if (options.writeServiceInfo()) {
+        new ServiceModelWriter().write(cxfContext.getJavaModel(), tmpGenDir);
+      }
       return cxfContext;
     };
 
