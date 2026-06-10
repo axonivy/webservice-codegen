@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockserver.integration.ClientAndServer;
 
+import com.axonivy.ivy.tool.cxf.codegen.binding.IvyGeneratorBindings;
+
 public class TestCxfClientCodegen {
 
   @TempDir
@@ -143,6 +145,9 @@ public class TestCxfClientCodegen {
         .contains("protected Time time;")
         .contains("import ch.ivyteam.ivy.scripting.objects.Date;")
         .contains("protected Date date;");
+
+    assertThat(tmpDir.resolve(IvyGeneratorBindings.GLOBAL_JAXB_BINDINGS_XML))
+      .doesNotExist();
   }
 
   /**
