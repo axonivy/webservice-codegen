@@ -17,7 +17,7 @@
 
     <cxf.version>3.6.11</cxf.version>
     <cxf.xjc.version>3.3.4</cxf.xjc.version>
-    <jaxb2.commons.version>0.13.1</jaxb2.commons.version>
+    <jaxb2.commons.version>1.11.1-PUBLISHED-BY-MISTAKE</jaxb2.commons.version>
     <jaxb.version>2.3.9</jaxb.version>
   </properties>
 
