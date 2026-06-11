@@ -173,11 +173,11 @@ public class TestCxfClientCodegen {
               @WebParam(partName = "ipSprcd", name = "ipSprcd")
               int ipSprcd,
               @WebParam(partName = "opERROR", mode = WebParam.Mode.OUT, name = "opERROR")
-              javax.xml.ws.Holder<java.lang.Boolean> opERROR,
+              jakarta.xml.ws.Holder<java.lang.Boolean> opERROR,
               @WebParam(partName = "opMESSAGE", mode = WebParam.Mode.OUT, name = "opMESSAGE")
-              javax.xml.ws.Holder<java.lang.String> opMESSAGE,
+              jakarta.xml.ws.Holder<java.lang.String> opMESSAGE,
               @WebParam(partName = "ttSprcd", mode = WebParam.Mode.OUT, name = "ttSprcd")
-              javax.xml.ws.Holder<acticleinsert.asaxonivy.GetLanguageTtSprcdParam> ttSprcd
+              jakarta.xml.ws.Holder<acticleinsert.asaxonivy.GetLanguageTtSprcdParam> ttSprcd
           ) throws FaultDetailMessage;""");
   }
 
