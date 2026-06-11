@@ -17,7 +17,7 @@
 
     <cxf.version>4.2.2</cxf.version>
     <cxf.xjc.version>4.2.0</cxf.xjc.version>
-    <jaxb2.commons.version>0.13.1</jaxb2.commons.version>
+    <jaxb.plugins.version>4.0.16</jaxb.plugins.version>
     <jaxb.version>4.0.9</jaxb.version>
   </properties>
 
@@ -62,14 +62,14 @@
       <version>${cxf.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.jvnet.jaxb2_commons</groupId>
-      <artifactId>jaxb2-basics</artifactId>
-      <version>${jaxb2.commons.version}</version>
+      <groupId>org.jvnet.jaxb</groupId>
+      <artifactId>jaxb-plugins</artifactId>
+      <version>${jaxb.plugins.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.jvnet.jaxb2_commons</groupId>
-      <artifactId>jaxb2-commons-lang</artifactId>
-      <version>2.4</version>
+      <groupId>org.jvnet.jaxb</groupId>
+      <artifactId>jaxb-plugins-runtime</artifactId>
+      <version>${jaxb.plugins.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
