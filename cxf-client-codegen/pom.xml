@@ -16,7 +16,7 @@
     <maven.version>3.9.16</maven.version>
 
     <cxf.version>3.6.11</cxf.version>
-    <cxf.xjc.version>3.3.4</cxf.xjc.version>
+    <cxf.xjc.version>4.2.0</cxf.xjc.version>
     <jaxb2.commons.version>0.13.1</jaxb2.commons.version>
     <jaxb.version>2.3.9</jaxb.version>
   </properties>
