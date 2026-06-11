@@ -18,7 +18,7 @@
     <cxf.version>4.2.2</cxf.version>
     <cxf.xjc.version>4.2.0</cxf.xjc.version>
     <jaxb2.commons.version>0.13.1</jaxb2.commons.version>
-    <jaxb.version>2.3.9</jaxb.version>
+    <jaxb.version>4.0.9</jaxb.version>
   </properties>
 
   <name>CXF client codegen</name>
