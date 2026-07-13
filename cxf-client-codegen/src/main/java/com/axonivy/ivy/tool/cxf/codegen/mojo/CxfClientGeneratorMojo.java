@@ -28,7 +28,7 @@ import com.axonivy.ivy.tool.cxf.codegen.CxfClientGenerator.CodegenOpts;
  *
  * @since 1.0.0
  */
-@Mojo(name = CxfClientGeneratorMojo.GOAL, requiresProject = false)
+@Mojo(name = CxfClientGeneratorMojo.GOAL, requiresProject = false, threadSafe = true)
 public class CxfClientGeneratorMojo extends AbstractMojo {
   public static final String GOAL = "generate-cxf-client";
 
