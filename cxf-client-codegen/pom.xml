@@ -23,15 +23,15 @@
 
   <name>CXF client codegen</name>
   <description>Generates the CXF client for webservice client calls</description>
-  <url>https://github.com/axonivy/cxf-client-codegen</url>
+  <url>https://github.com/axonivy/webservice-codegen</url>
   <scm>
-    <connection>scm:git:git://github.com/axonivy/cxf-client-codegen.git</connection>
-    <developerConnection>scm:git:ssh://github.com:axonivy/cxf-client-codegen.git</developerConnection>
-    <url>http://github.com/axonivy/cxf-client-codegen</url>
+    <connection>scm:git:git://github.com/axonivy/webservice-codegen.git</connection>
+    <developerConnection>scm:git:ssh://github.com:axonivy/webservice-codegen.git</developerConnection>
+    <url>http://github.com/axonivy/webservice-codegen</url>
   </scm>
   <issueManagement>
     <system>github</system>
-    <url>https://github.com/axonivy/cxf-client-codegen/issues</url>
+    <url>https://github.com/axonivy/webservice-codegen/issues</url>
   </issueManagement>
   <licenses>
     <license>
