@@ -3,7 +3,7 @@
 [![release-version][release-shield]][release]
 [![snapshot-version][snap-shield]][snap]
 
-[snap-shield]: https://img.shields.io/maven-metadata/v?versionPrefix=1&label=dev&logo=sonatype&metadataUrl=https%3A%2F%2Fcentral.sonatype.com%2Frepository%2Fmaven-snapshots%2Fcom%2Faxonivy%2Fivy%2Ftool%2Fsoap%2Fcxf-client-codegen%2Fmaven-metadata.xml
+[snap-shield]: https://img.shields.io/maven-metadata/v?label=dev&logo=sonatype&metadataUrl=https%3A%2F%2Fcentral.sonatype.com%2Frepository%2Fmaven-snapshots%2Fcom%2Faxonivy%2Fivy%2Ftool%2Fsoap%2Fcxf-client-codegen%2Fmaven-metadata.xml
 [snap]: https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/com/axonivy/ivy/tool/soap/cxf-client-codegen/
 
 [release-shield]: https://img.shields.io/maven-metadata/v.svg?label=Stable&logo=apachemaven&metadataUrl=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Fcom%2Faxonivy%2Fivy%2Ftool%2Fsoap%2Fcxf-client-codegen%2Fmaven-metadata.xml
