@@ -15,7 +15,7 @@
     <maven.compiler.target>25</maven.compiler.target>
     <maven.version>3.9.16</maven.version>
 
-    <cxf.version>4.2.2</cxf.version>
+    <cxf.version>4.2.3</cxf.version>
     <cxf.xjc.version>4.2.0</cxf.xjc.version>
     <jaxb.plugins.version>4.0.16</jaxb.plugins.version>
     <jaxb.version>4.0.9</jaxb.version>
