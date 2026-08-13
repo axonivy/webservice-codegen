@@ -1,0 +1,30 @@
+pipeline {
+  agent any
+
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '20'))
+  }
+
+  triggers {
+    cron '@midnight'
+  }
+
+  stages {
+    stage('build') {
+      steps {
+        script {
+          if (isReleasingBranch()) {
+            docker.build('maven', './build/sbom').inside() {
+              maven cmd: "org.cyclonedx:cyclonedx-maven-plugin:makeBom -DincludeLicenseText=true -DoutputFormat=json"
+              withCredentials([string(credentialsId: 'dependency-track', variable: 'API_KEY')]) {
+                def project = "openapi-codegen"
+                def version = sh (script: "mvn -pl ${project} help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true)
+                uploadBOM(projectName: project, projectVersion: version, bomFile: project + '/target/bom.json')
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
