@@ -14,7 +14,7 @@ pipeline {
       steps {
         script {
           if (isReleasingBranch()) {
-            docker.build('maven', './build/sbom').inside() {
+            docker.build('maven', '-f ./build/Dockerfile.maven .').inside {
               maven cmd: "org.cyclonedx:cyclonedx-maven-plugin:makeBom -DincludeLicenseText=true -DoutputFormat=json"
               withCredentials([string(credentialsId: 'dependency-track', variable: 'API_KEY')]) {
                 def project = "cxf-client-codegen"

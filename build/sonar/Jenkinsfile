@@ -1,0 +1,27 @@
+pipeline {
+  agent any
+
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '30'))
+    disableConcurrentBuilds()
+  }
+
+  triggers {
+    cron '@midnight'
+  }
+
+  stages {
+    stage('build') {
+      when {
+        branch 'master'
+      }
+      steps {
+        script {
+          docker.build('maven', '-f ./build/Dockerfile.maven .').inside {
+            sonar projectName: 'webservice-codegen', mvnPhase: 'clean compile'           
+          }
+        }
+      }
+    }
+  }
+}
