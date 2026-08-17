@@ -4,15 +4,13 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.WRITE;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -71,20 +69,20 @@ public class FixCXFSchemaLocation {
 
   private static void writeWsdl(Path schemaPath, Document doc) throws TransformerConfigurationException,
       TransformerFactoryConfigurationError, TransformerException, IOException {
-    try (OutputStream outputStream = Files.newOutputStream(schemaPath, CREATE, WRITE)) {
-      Transformer transformer = TransformerFactory.newInstance().newTransformer();
-      transformer.transform(new DOMSource(doc), new StreamResult(outputStream));
+    try (var out = Files.newOutputStream(schemaPath, CREATE, WRITE)) {
+      var factory = TransformerFactory.newInstance();
+      factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+      var transformer = factory.newTransformer();
+      transformer.transform(new DOMSource(doc), new StreamResult(out));
     }
   }
 
-  private static Document readWsdl(Path schemaPath)
-      throws SAXException, IOException, ParserConfigurationException {
-    Document doc;
-    try (InputStream inputStream = Files.newInputStream(schemaPath)) {
-      doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-          .parse(inputStream);
+  private static Document readWsdl(Path schemaPath) throws SAXException, IOException, ParserConfigurationException {
+    try (var in = Files.newInputStream(schemaPath)) {
+      var factory = DocumentBuilderFactory.newInstance();
+      factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+      return factory.newDocumentBuilder().parse(in);
     }
-    return doc;
   }
 
   private static boolean modifyEmptySchemaLocation(Document doc) throws XPathExpressionException {
