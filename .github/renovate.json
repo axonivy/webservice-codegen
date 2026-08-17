@@ -9,7 +9,8 @@
       "matchPackageNames" :[
         "org.apache.maven.*",
         "org.junit.jupiter:*",
-        "org.assertj:*"
+        "org.assertj:*",
+        "com.fasterxml.jackson.core:*"
       ],
       "automerge": true
     }
