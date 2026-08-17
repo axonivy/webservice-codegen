@@ -72,6 +72,8 @@ public class FixCXFSchemaLocation {
     try (var out = Files.newOutputStream(schemaPath, CREATE, WRITE)) {
       var factory = TransformerFactory.newInstance();
       factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+      factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
       var transformer = factory.newTransformer();
       transformer.transform(new DOMSource(doc), new StreamResult(out));
     }
@@ -81,6 +83,12 @@ public class FixCXFSchemaLocation {
     try (var in = Files.newInputStream(schemaPath)) {
       var factory = DocumentBuilderFactory.newInstance();
       factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+      factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+      factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+      factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+      factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+      factory.setXIncludeAware(false);
+      factory.setExpandEntityReferences(false);
       return factory.newDocumentBuilder().parse(in);
     }
   }
