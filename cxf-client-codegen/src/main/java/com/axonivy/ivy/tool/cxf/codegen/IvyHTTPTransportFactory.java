@@ -60,7 +60,7 @@ public class IvyHTTPTransportFactory extends HTTPTransportFactory implements WSD
   private static DestinationFactory getRegisteredFactory(DestinationFactoryManager dfm, String ns) {
     try {
       return dfm.getDestinationFactory(ns);
-    } catch (BusException ex) { // nothing registered
+    } catch (BusException _) { // nothing registered
       return null;
     }
   }

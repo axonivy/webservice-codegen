@@ -6,12 +6,8 @@ import static java.nio.file.StandardOpenOption.WRITE;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.stream.Stream;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,16 +25,14 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 public class FixCXFSchemaLocation {
   private static final Logger LOGGER = LoggerFactory.getLogger(FixCXFSchemaLocation.class);
@@ -54,24 +48,24 @@ public class FixCXFSchemaLocation {
    * schemaLocation=""/ &gt;)</li>
    * <li>Writes the modified WSDL (only if a modification was performed)</li>
    * </ol>
-   * 
+   *
    * @param tmpGenDir
    * @throws IOException
    */
   public static void fixLocalWsdlIfNecessary(Path tmpGenDir) throws IOException {
     try (Stream<Path> walker = Files.walk(tmpGenDir, 1)) {
       walker.filter(FixCXFSchemaLocation::isSchemaFile)
-        .forEach(schemaPath -> {
-          try {
-            Document doc = readWsdl(schemaPath);
-            boolean hasModifiedWsdl = modifyEmptySchemaLocation(doc);
-            if (hasModifiedWsdl) {
-              writeWsdl(schemaPath, doc);
+          .forEach(schemaPath -> {
+            try {
+              Document doc = readWsdl(schemaPath);
+              boolean hasModifiedWsdl = modifyEmptySchemaLocation(doc);
+              if (hasModifiedWsdl) {
+                writeWsdl(schemaPath, doc);
+              }
+            } catch (Exception ex) {
+              LOGGER.warn("Failed to modify schemaLocation in service definition files", ex);
             }
-          } catch (Exception ex) {
-            LOGGER.warn("Failed to modify schemaLocation in service definition files", ex);
-          }
-        });
+          });
     }
   }
 
