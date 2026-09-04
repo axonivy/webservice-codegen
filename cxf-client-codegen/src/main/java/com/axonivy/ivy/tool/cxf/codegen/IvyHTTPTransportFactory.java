@@ -48,7 +48,7 @@ public class IvyHTTPTransportFactory extends HTTPTransportFactory implements WSD
 
   void reset(Map<String, DestinationFactory> nsFactories) {
     DestinationFactoryManager dfm = getDestinationFactoryManager();
-    nsFactories.keySet().stream().forEach(ns -> {
+    nsFactories.keySet().forEach(ns -> {
       dfm.deregisterDestinationFactory(ns);
       DestinationFactory factory = nsFactories.get(ns);
       if (factory != null) {
