@@ -147,7 +147,7 @@ public class TestCxfClientCodegen {
         .contains("protected Date date;");
 
     assertThat(tmpDir.resolve(IvyGeneratorBindings.GLOBAL_JAXB_BINDINGS_XML))
-      .doesNotExist();
+        .doesNotExist();
   }
 
   /**
@@ -191,15 +191,11 @@ public class TestCxfClientCodegen {
         .as("list getters and setters")
         .contains(
             "public List<String> getNames()",
-            "public void setNames(List<String> value)");
-
-    assertThat(impl)
+            "public void setNames(List<String> value)")
         .as("wrapper types getters and setters")
         .contains(
             "public Boolean isMale()",
-            "public void setMale(Boolean value)");
-
-    assertThat(impl)
+            "public void setMale(Boolean value)")
         .as("implements common object identifiers")
         .contains(
             "public String toString()",
@@ -336,13 +332,13 @@ public class TestCxfClientCodegen {
         .exists();
 
     var serviceImpl = Files.readString(tmpDir.resolve("org").resolve("tempuri").resolve("IService1.java"));
-    assertThat(serviceImpl).isNotEmpty();
-
-    assertThat(serviceImpl).containsIgnoringWhitespaces("""
-      public GetDataUsingDataContractResponse getDataUsingDataContract(
-        @WebParam(partName = "parameters", name = "GetDataUsingDataContract", targetNamespace = "http://tempuri.org/")
-        GetDataUsingDataContract parameters
-      );""");
+    assertThat(serviceImpl)
+        .isNotEmpty()
+        .containsIgnoringWhitespaces("""
+          public GetDataUsingDataContractResponse getDataUsingDataContract(
+            @WebParam(partName = "parameters", name = "GetDataUsingDataContract", targetNamespace = "http://tempuri.org/")
+            GetDataUsingDataContract parameters
+          );""");
   }
 
   /**
@@ -361,9 +357,7 @@ public class TestCxfClientCodegen {
         .containsIgnoringWhitespaces("""
           public String getPRICEDATE() {
             return pricedate;
-          }""");
-
-    assertThat(bookImpl)
+          }""")
         .as("getter for type natively with underscore")
         .containsIgnoringWhitespaces("""
           public String getPRICE_DATE() {
