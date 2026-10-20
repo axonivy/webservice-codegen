@@ -19,12 +19,12 @@ jobs:
     if: github.ref == 'refs/heads/master'
     steps:
         - uses: actions/checkout@v7
-        - name: Set up Maven Central Repository
+        - name: Set up Axon Ivy Nexus
           uses: actions/setup-java@v6
           with:
             java-version: '25'
             distribution: 'temurin'
-            server-id: central
+            server-id: nexus.axonivy.com
             server-username: MAVEN_USERNAME
             server-password: MAVEN_PASSWORD
             gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -47,11 +47,10 @@ jobs:
             git push origin "v${releasedVersion}"
 
         - name: Publish package
-          run: mvn --batch-mode -f pom.xml deploy -PcentralDeploy 
+          run: mvn --batch-mode -f pom.xml deploy -PnexusDeploy
           env:
             MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
             MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-            MAVEN_CENTRAL_TOKEN: ${{ secrets.NEXUS_PASSWORD }}
             MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
             MAVEN_OPTS: "--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
 
