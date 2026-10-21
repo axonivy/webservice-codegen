@@ -49,8 +49,8 @@ jobs:
         - name: Publish package
           run: mvn --batch-mode -f pom.xml deploy -PnexusDeploy
           env:
-            MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-            MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+            MAVEN_USERNAME: ${{ secrets.NEXUS_AXON_IVY_USERNAME }}
+            MAVEN_PASSWORD: ${{ secrets.NEXUS_AXON_IVY_PASSWORD }}
             MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
             MAVEN_OPTS: "--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
 
