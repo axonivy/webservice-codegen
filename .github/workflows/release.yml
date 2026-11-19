@@ -1,6 +1,6 @@
 name: Release
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
     inputs:
       snapshot:
         type: boolean
@@ -38,13 +38,14 @@ jobs:
 
         - name: Introduce final Release version
           if: github.event.inputs.snapshot == 'false'
+          id: release
           run: |
             mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.incrementalVersion} -DprocessAllModules -DgenerateBackupPoms=false versions:commit
             git add .
             git commit -m "update versions for release"
             releasedVersion=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
             git tag "v${releasedVersion}" -a -m "Official release ${releasedVersion}"
-            git push origin "v${releasedVersion}"
+            echo "version=${releasedVersion}" >> "$GITHUB_OUTPUT"
 
         - name: Publish package
           run: mvn --batch-mode -f pom.xml deploy -PnexusDeploy
@@ -56,11 +57,14 @@ jobs:
 
         - name: Prepare Next dev cycle
           if: github.event.inputs.snapshot == 'false'
+          env:
+            RELEASE_VERSION: ${{ steps.release.outputs.version }}
           run: |
+            git reset --hard HEAD~1
             mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT -DprocessAllModules -DgenerateBackupPoms=false versions:commit
             git add .
             git commit -m "update versions for next dev-cycle"
-            git push -u origin new-release
+            git push --atomic origin "refs/tags/v${RELEASE_VERSION}" new-release
   
         - name: Create pull request
           if: github.event.inputs.snapshot == 'false'
